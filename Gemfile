@@ -5,6 +5,7 @@ ruby "3.0.2"
 
 gem "devise",        "~> 4.8.0"
 gem "jwt",           "~> 2.2.3"
+gem "oj",            "~> 3.12.2"
 gem "pg",            "~> 1.2.3"
 gem "puma",          "~> 5.0"
 gem "rails",         "~> 6.1.4"
@@ -13,12 +14,12 @@ gem "sequel-devise", "~> 0.0.13"
 gem "sequel-rails",  "~> 1.1.1"
 gem "webpacker",     "~> 5.4.0"
 
-# Use Rack CORS for handling Cross-Origin Resource Sharing (CORS), making cross-origin AJAX possible
-# gem 'rack-cors'
-
 group :development, :test do
-  # Call 'byebug' anywhere in the code to stop execution and get a debugger console
+  gem "awesome_print"
   gem "byebug", platforms: [:mri, :mingw, :x64_mingw]
+  gem "faraday"
+  gem "faraday_middleware"
+  gem "factory_bot_rails"
   gem "pry-byebug"
   gem "rubocop"
   gem "rspec-rails"

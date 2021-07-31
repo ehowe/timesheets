@@ -1,16 +1,26 @@
 Rails.application.routes.draw do
   # We are defining the controllers paths avoding to search them from an `api`
   # folder.
-  devise_for :users, controllers: {
-    confirmations: "devise/confirmations",
-    passwords:     "devise/passwords",
-    sessions:      "sessions",
-    unlocks:       "devise/unlocks"
-  }
+  scope :api, constraints: { format: :json } do
+    devise_for :users, controllers: {
+      confirmations: "devise/confirmations",
+      passwords:     "devise/passwords",
+      sessions:      "sessions",
+      unlocks:       "devise/unlocks"
+    }
 
-  # ~~~~ Application Resources ~~~~
-  resources :users
+    resources :users, only: [] do
+      member do
+        resources :timesheets, only: [:create, :destroy, :show, :update, :index] do
+          member do
+            resources :entries, only: [:create, :destroy, :update, :index]
+          end
+        end
+      end
+    end
+  end
 
-  get "/users/check_for_user", to: "users#check_for_user"
   root "pages#index", as: :pages_index
+
+  match "*path", to: "pages#index", via: :all
 end

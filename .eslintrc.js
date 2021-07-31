@@ -14,6 +14,7 @@ module.exports = {
     },
   },
   rules: {
+    "@typescript-eslint/no-explicit-any": "off",
     "array-bracket-spacing": ["error", "never"],
     "array-element-newline": "off",
     "camelcase": ["error", { ignoreDestructuring: true, properties: "never" }],

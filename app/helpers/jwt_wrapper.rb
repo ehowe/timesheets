@@ -1,5 +1,5 @@
-module JWTWrapper
-  extend self
+module JwtWrapper
+  module_function
 
   def encode(payload, expiration = nil)
     expiration ||= Rails.application.secrets.jwt_expiration_hours
@@ -16,5 +16,9 @@ module JWTWrapper
     decoded_token.first
   rescue StandardError
     nil
+  end
+
+  def expired?(token)
+    Time.at(decode(token)["exp"]) < Time.now
   end
 end
