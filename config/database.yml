@@ -1,0 +1,16 @@
+---
+default: &default
+  adapter: postgresql
+
+# Local development only
+development: &local
+  <<: *default
+  host: <%= ENV.fetch("DATABASE_HOST") { "localhost" } %>
+  username: eugene
+  password:
+  database: timesheets
+
+test:
+  <<: *default
+  <<: *local
+  database: timesheets-test
