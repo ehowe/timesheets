@@ -1,9 +1,9 @@
-import * as React from "react"
-import { connect } from "react-redux"
+import * as React from 'react'
+import { connect } from 'react-redux'
 
 import {
   Container,
-} from "react-bootstrap"
+} from 'react-bootstrap'
 
 const Admin: React.FC = () => {
   return (

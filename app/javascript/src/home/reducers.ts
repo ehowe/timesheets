@@ -3,7 +3,7 @@ import homeConstants from './constants'
 const initialState = {
   deletingUser: false,
   loading: false,
-  items: []
+  items: [],
 }
 
 export default (state = initialState, action) => {
@@ -15,11 +15,11 @@ export default (state = initialState, action) => {
           user.id === action.id
             ? { ...user, deleting: true }
             : user
-        )
+        ),
       }
     case homeConstants.DELETE_USER_SUCCESS:
       return {
-        items: state.items.filter(user => user.id !== action.id)
+        items: state.items.filter(user => user.id !== action.id),
       }
     case homeConstants.DELETE_USER_FAILURE:
       return {
@@ -33,19 +33,19 @@ export default (state = initialState, action) => {
           }
 
           return user
-        })
+        }),
       }
     case homeConstants.GET_ALL_USERS_REQUEST:
       return { loading: true }
     case homeConstants.GET_ALL_USERS_SUCCESS:
       return {
         loading: false,
-        items: action.users
+        items: action.users,
       }
     case homeConstants.GET_ALL_USERS_FAILURE:
       return {
         loading: false,
-        items: []
+        items: [],
       }
     default:
       return state

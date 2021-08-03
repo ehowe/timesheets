@@ -1,16 +1,16 @@
-import * as React from "react"
-import { connect } from "react-redux"
-import axios from "axios"
+import * as React from 'react'
+import { connect } from 'react-redux'
+import axios from 'axios'
 
-import type { UserT } from "../model.types"
+import type { UserT } from '../model.types'
 
-import { DispatchLoadingContext } from "./LoadingProvider"
+import { DispatchLoadingContext } from './LoadingProvider'
 
 import {
   Container,
   Nav,
   Table,
-} from "react-bootstrap"
+} from 'react-bootstrap'
 
 type PropsT = {
   user: UserT,

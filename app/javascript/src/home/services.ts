@@ -4,7 +4,7 @@ import AuthHeader from '../helpers/AuthHeader'
 function deleteUser(id) {
   return fetch('/api/users/' + id, {
     method: 'DELETE',
-    headers: AuthHeader()
+    headers: AuthHeader(),
   })
   .then(ApiUtils.checkStatus)
   .then(response => response.json())
@@ -13,7 +13,7 @@ function deleteUser(id) {
 function getAllUsers() {
   return fetch('/api/users', {
     method: 'GET',
-    headers: AuthHeader()
+    headers: AuthHeader(),
   })
   .then(ApiUtils.checkStatus)
   .then(response => response.json())
@@ -21,5 +21,5 @@ function getAllUsers() {
 
 export default {
   deleteUser,
-  getAllUsers
+  getAllUsers,
 }

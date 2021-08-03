@@ -1,17 +1,17 @@
-import * as React from "react"
-import * as ReactRouterDOM from "react-router-dom"
-import { connect } from "react-redux"
-import axios from "axios"
+import * as React from 'react'
+import * as ReactRouterDOM from 'react-router-dom'
+import { connect } from 'react-redux'
+import axios from 'axios'
 
-import type { UserT } from "../model.types"
+import type { UserT } from '../model.types'
 
 import {
   Container,
   Spinner,
   Table,
-} from "react-bootstrap"
+} from 'react-bootstrap'
 
-import { DispatchLoadingContext } from "./LoadingProvider"
+import { DispatchLoadingContext } from './LoadingProvider'
 
 type PropsT = {
   user: UserT,

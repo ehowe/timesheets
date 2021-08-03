@@ -45,5 +45,5 @@ const getAll = () => {
 
 export default {
   deleteUser,
-  getAll
+  getAll,
 }

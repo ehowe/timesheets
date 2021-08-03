@@ -1,11 +1,11 @@
-import * as React from "react"
+import * as React from 'react'
 
 import {
   Modal,
   Spinner,
-} from "react-bootstrap"
+} from 'react-bootstrap'
 
-import { LoadingContext } from "./LoadingProvider"
+import { LoadingContext } from './LoadingProvider'
 
 const LoadingModal: React.FC = () => {
   const loading: boolean = React.useContext(LoadingContext)
