@@ -6,19 +6,22 @@ import {
   Row,
 } from 'react-bootstrap'
 
+import InlineSpinner from '../InlineSpinner'
+import { LoginContext, DispatchLoginContext } from '../LoginProvider'
 import passwordActions from './actions'
 import FormCsrfInput from '../helpers/FormCsrfInput'
 
 type PropsT = {
-  dispatch: any,
-  errors: any,
   location: { search: any },
   match: { params: { userId: number } },
-  reseting: any,
 }
 
 const DevisePasswordsEdit: React.FC<PropsT> = (props: PropsT) => {
+  const { resetting, errors } = React.useContext(LoginContext)
+  const dispatchLogin = React.useContext(DispatchLoginContext)
+
   const query = qs.parse(props.location.search)
+
   const initState = {
     user: {
       id: props.match.params.userId,
@@ -31,7 +34,6 @@ const DevisePasswordsEdit: React.FC<PropsT> = (props: PropsT) => {
 
   const reducer = (state, update) => ({ ...state, ...update })
   const [state, dispatch] = React.useReducer(reducer, initState)
-  const { reseting, errors } = props
 
   function handleChange(event) {
     const { name, value } = event.target
@@ -53,7 +55,7 @@ const DevisePasswordsEdit: React.FC<PropsT> = (props: PropsT) => {
     const { user } = this.state
 
     if (user.password && user.passwordConfirmation) {
-      props.dispatch(passwordActions.changePassword(user))
+      passwordActions.changePassword({ dispatch, user })
     }
   }
 
@@ -85,24 +87,13 @@ const DevisePasswordsEdit: React.FC<PropsT> = (props: PropsT) => {
           </div>
           <div className="form-group">
             <button className="btn btn-primary">Change my password</button>
-            {reseting &&
-              <img src="data:image/gif;base64,R0lGODlhEAAQAPIAAP///wAAAMLCwkJCQgAAAGJiYoKCgpKSkiH/C05FVFNDQVBFMi4wAwEAAAAh/hpDcmVhdGVkIHdpdGggYWpheGxvYWQuaW5mbwAh+QQJCgAAACwAAAAAEAAQAAADMwi63P4wyklrE2MIOggZnAdOmGYJRbExwroUmcG2LmDEwnHQLVsYOd2mBzkYDAdKa+dIAAAh+QQJCgAAACwAAAAAEAAQAAADNAi63P5OjCEgG4QMu7DmikRxQlFUYDEZIGBMRVsaqHwctXXf7WEYB4Ag1xjihkMZsiUkKhIAIfkECQoAAAAsAAAAABAAEAAAAzYIujIjK8pByJDMlFYvBoVjHA70GU7xSUJhmKtwHPAKzLO9HMaoKwJZ7Rf8AYPDDzKpZBqfvwQAIfkECQoAAAAsAAAAABAAEAAAAzMIumIlK8oyhpHsnFZfhYumCYUhDAQxRIdhHBGqRoKw0R8DYlJd8z0fMDgsGo/IpHI5TAAAIfkECQoAAAAsAAAAABAAEAAAAzIIunInK0rnZBTwGPNMgQwmdsNgXGJUlIWEuR5oWUIpz8pAEAMe6TwfwyYsGo/IpFKSAAAh+QQJCgAAACwAAAAAEAAQAAADMwi6IMKQORfjdOe82p4wGccc4CEuQradylesojEMBgsUc2G7sDX3lQGBMLAJibufbSlKAAAh+QQJCgAAACwAAAAAEAAQAAADMgi63P7wCRHZnFVdmgHu2nFwlWCI3WGc3TSWhUFGxTAUkGCbtgENBMJAEJsxgMLWzpEAACH5BAkKAAAALAAAAAAQABAAAAMyCLrc/jDKSatlQtScKdceCAjDII7HcQ4EMTCpyrCuUBjCYRgHVtqlAiB1YhiCnlsRkAAAOwAAAAAAAAAAAA==" />
-            }
+            {resetting && <InlineSpinner />}
             <Link to="/users/sign_in" className="btn btn-link">Cancel</Link>
           </div>
         </form>
       </Col>
     </Row>
   )
-}
-
-function mapStateToProps(state) {
-  const { reseting, errors } = state.password
-
-  return {
-    reseting,
-    errors,
-  }
 }
 
 export default DevisePasswordsEdit

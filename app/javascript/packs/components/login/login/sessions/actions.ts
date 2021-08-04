@@ -27,6 +27,7 @@ const login = ({ email, password, dispatch }: LoginPropsT): void => {
 }
 
 const logout = ({ dispatch }: { dispatch: (any) => void }): void => {
+  dispatch({ type: loginConstants.ALERT, use: loginConstants.ALERT_SUCCESS, payload: 'Logged out' })
   dispatch({ type: loginConstants.LOGOUT })
 }
 

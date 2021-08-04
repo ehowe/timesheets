@@ -40,7 +40,7 @@ const Sheet: React.FC = () => {
       .catch(error => {
         if (error.response && error.response.status === 401) {
           dispatch({ type: 'logout' })
-          dispatch({ type: 'alert', use: 'ALERT_ERROR', payload: 'Token expired' })
+          dispatch({ type: 'alert', use: 'ALERT_ERROR', payload: 'Session expired' })
           setLoading(false)
           setRedirect(true)
         }

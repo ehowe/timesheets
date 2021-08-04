@@ -7,13 +7,13 @@ import {
 
 import passwordActions from './actions'
 
-type PropsT = {
-  dispatch: any,
-  sendingPasswordInstructions: any,
-  errors: any,
-}
+import InlineSpinner from '../InlineSpinner'
+import { LoginContext, DispatchLoginContext } from '../LoginProvider'
 
-const DevisePasswordsNew: React.FC<PropsT> = (props: PropsT) => {
+const DevisePasswordsNew: React.FC = () => {
+  const { sendingPasswordInstructions, errors } = React.useContext(LoginContext)
+  const dispatchLogin = React.useContext(DispatchLoginContext)
+
   const initState = {
     user: {
       email: '',
@@ -32,7 +32,6 @@ const DevisePasswordsNew: React.FC<PropsT> = (props: PropsT) => {
       },
     })
   }
-  const { sendingPasswordInstructions, errors } = props
 
   function handleSubmit(event) {
     event.preventDefault()
@@ -40,7 +39,7 @@ const DevisePasswordsNew: React.FC<PropsT> = (props: PropsT) => {
     dispatch({ submitted: true })
 
     if (state.user.email) {
-      props.dispatch(passwordActions.sendPasswordInstructions(state.user))
+      passwordActions.sendPasswordInstructions({ dispatch: dispatchLogin, user: state.user })
     }
   }
 
@@ -61,23 +60,13 @@ const DevisePasswordsNew: React.FC<PropsT> = (props: PropsT) => {
           </div>
           <div className="form-group">
             <button className="btn btn-primary">Send me reset password instructions</button>
-            {sendingPasswordInstructions && (
-              <img src="data:image/gif;base64,R0lGODlhEAAQAPIAAP///wAAAMLCwkJCQgAAAGJiYoKCgpKSkiH/C05FVFNDQVBFMi4wAwEAAAAh/hpDcmVhdGVkIHdpdGggYWpheGxvYWQuaW5mbwAh+QQJCgAAACwAAAAAEAAQAAADMwi63P4wyklrE2MIOggZnAdOmGYJRbExwroUmcG2LmDEwnHQLVsYOd2mBzkYDAdKa+dIAAAh+QQJCgAAACwAAAAAEAAQAAADNAi63P5OjCEgG4QMu7DmikRxQlFUYDEZIGBMRVsaqHwctXXf7WEYB4Ag1xjihkMZsiUkKhIAIfkECQoAAAAsAAAAABAAEAAAAzYIujIjK8pByJDMlFYvBoVjHA70GU7xSUJhmKtwHPAKzLO9HMaoKwJZ7Rf8AYPDDzKpZBqfvwQAIfkECQoAAAAsAAAAABAAEAAAAzMIumIlK8oyhpHsnFZfhYumCYUhDAQxRIdhHBGqRoKw0R8DYlJd8z0fMDgsGo/IpHI5TAAAIfkECQoAAAAsAAAAABAAEAAAAzIIunInK0rnZBTwGPNMgQwmdsNgXGJUlIWEuR5oWUIpz8pAEAMe6TwfwyYsGo/IpFKSAAAh+QQJCgAAACwAAAAAEAAQAAADMwi6IMKQORfjdOe82p4wGccc4CEuQradylesojEMBgsUc2G7sDX3lQGBMLAJibufbSlKAAAh+QQJCgAAACwAAAAAEAAQAAADMgi63P7wCRHZnFVdmgHu2nFwlWCI3WGc3TSWhUFGxTAUkGCbtgENBMJAEJsxgMLWzpEAACH5BAkKAAAALAAAAAAQABAAAAMyCLrc/jDKSatlQtScKdceCAjDII7HcQ4EMTCpyrCuUBjCYRgHVtqlAiB1YhiCnlsRkAAAOwAAAAAAAAAAAA==" />
-            )}
+            {sendingPasswordInstructions && <InlineSpinner />}
             <Link to="/users/sign_in" className="btn btn-link">Cancel</Link>
           </div>
         </form>
       </Col>
     </Row>
   )
-}
-
-function mapStateToProps(state) {
-  const { sendingPasswordInstructions, errors } = state.registration
-  return {
-    sendingPasswordInstructions,
-    errors,
-  }
 }
 
 export default DevisePasswordsNew

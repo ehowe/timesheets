@@ -77,12 +77,12 @@ module.exports = function(api) {
           async: false
         }
       ],
-      isProductionEnv && [
-        'babel-plugin-transform-react-remove-prop-types',
+      [
+        '@babel/plugin-proposal-private-methods',
         {
-          removeImport: true
+          loose: true,
         }
-      ]
+      ],
     ].filter(Boolean)
   }
 }

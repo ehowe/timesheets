@@ -6,6 +6,7 @@ export default {
   REGISTER: 'register',
   CONFIRM: 'confirm',
   PASSWORD: 'password',
+  PASSWORD_RESET: 'password_reset',
   REFRESH: 'refresh',
 
   CHANGE_PASSWORD_REQUEST: 'DEVISE_CHANGE_PASSWORD_REQUEST',

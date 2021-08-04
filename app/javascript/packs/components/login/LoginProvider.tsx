@@ -16,6 +16,8 @@ type StateT = {
   errors: Array<string>,
   messages: Array<MessageT>,
   registering: boolean,
+  resetting: boolean,
+  sendingPasswordInstructions: boolean,
   unlocking: boolean,
   user: any,
 }
@@ -35,6 +37,8 @@ const INIT_STATE: StateT = {
   loggingIn: false,
   messages: [],
   registering: false,
+  resetting: false,
+  sendingPasswordInstructions: false,
   unlocking: false,
   user: localStorageUser || {},
 }
@@ -82,6 +86,16 @@ const stateReducer = (state: StateT, action: ActionT) => {
     case loginConstants.LOGOUT:
       localStorage.removeItem('user')
       return { ...state, user: {} }
+    case loginConstants.PASSWORD_RESET:
+      switch(use) {
+        case loginConstants.PASSWORD_RESET_REQUEST:
+          return { ...state, resetting: true }
+        case loginConstants.PASSWORD_RESET_SUCCESS:
+          return { ...state, resetting: false }
+        case loginConstants.PASSWORD_RESET_FAILURE:
+          return { ...state, errors: [payload] }
+      }
+      break
     case loginConstants.ALERT:
       switch(use) {
         case loginConstants.ALERT_SUCCESS:
