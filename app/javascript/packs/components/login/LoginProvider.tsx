@@ -1,17 +1,22 @@
 import * as React from 'react'
 
-import type { UserT } from '../model.types'
+import type { MessageT } from './types'
 
 import loginConstants from './constants'
-import Utils from '../helpers/Utils'
+import Utils from './helpers/Utils'
 
 type LoginProviderPropsT = {
   children: JSX.Element,
 }
 
 type StateT = {
+  confirming: boolean,
   loggedIn: boolean,
   loggingIn: boolean,
+  errors: Array<string>,
+  messages: Array<MessageT>,
+  registering: boolean,
+  unlocking: boolean,
   user: any,
 }
 
@@ -21,23 +26,22 @@ type ActionT = {
   payload: any,
 }
 
-type ReducerT = {
-  state: StateT,
-  action: ActionT,
-}
-
 const localStorageUser = JSON.parse(window.localStorage.getItem('user'))
 
 const INIT_STATE: StateT = {
+  confirming: false,
+  errors: [],
   loggedIn: !!localStorageUser,
   loggingIn: false,
   messages: [],
+  registering: false,
+  unlocking: false,
   user: localStorageUser || {},
 }
 
-type DispatchT = (update: UserT) => void
+type DispatchT = (update: any) => void
 
-export const LoginContext = React.createContext<UserT>(null)
+export const LoginContext = React.createContext(null)
 export const DispatchLoginContext = React.createContext<DispatchT | typeof undefined>(undefined)
 
 export const LoginProvider: React.FC<LoginProviderPropsT> = (props: LoginProviderPropsT) => {
@@ -52,8 +56,8 @@ export const LoginProvider: React.FC<LoginProviderPropsT> = (props: LoginProvide
   )
 }
 
-const stateReducer = (args: ReducerT): StateT | void => {
-  const { type, use, payload } = args.action
+const stateReducer = (state: StateT, action: ActionT) => {
+  const { type, use, payload } = action
 
   switch(type) {
     case loginConstants.LOGIN:
@@ -85,18 +89,67 @@ const stateReducer = (args: ReducerT): StateT | void => {
             ...state,
             messages: [...state.messages, {
               type: 'success',
-              text: action.payload,
+              text: payload,
               id: Utils.genId(),
             }],
           }
         case loginConstants.ALERT_ERROR:
-          break
+          return {
+            ...state,
+            messages: [...state.messages, {
+              type: 'danger',
+              text: payload,
+              id: Utils.genId(),
+            }],
+          }
         case loginConstants.ALERT_CLEAR:
+          return {
+            ...state,
+            messages: [],
+          }
+      }
+      break
+    case loginConstants.UNLOCK:
+      switch(use) {
+        case loginConstants.UNLOCK_REQUEST:
+          return { ...state, unlocking: true }
+        case loginConstants.UNLOCK_SUCCESS:
+          return { ...state, unlocking: false }
           break
+        case loginConstants.UNLOCK_FAILURE:
+          return { ...state, errors: [payload] }
+          break
+      }
+      break
+    case loginConstants.REGISTER:
+      switch(use) {
+        case loginConstants.REGISTER_REQUEST:
+          return { ...state, registering: true }
+        case loginConstants.REGISTER_SUCCESS:
+          return { ...state, registering: false }
+        case loginConstants.REGISTER_FAILURE:
+          return { ...state, errors: payload }
+          break
+      }
+      break
+    case loginConstants.CONFIRM:
+      switch(use) {
+        case loginConstants.CONFIRMATION_REQUEST:
+          return { ...state, confirming: true }
+        case loginConstants.CONFIRMATION_SUCCESS:
+          return { ...state, confirming: false }
+        case loginConstants.CONFIRMATION_FAILURE:
+          return { ...state, errors: payload }
+        case loginConstants.CONFIRMATION_RESEND_REQUEST:
+          return { ...state }
+        case loginConstants.CONFIRMATION_RESEND_SUCCESS:
+          return { ...state }
+        case loginConstants.CONFIRMATION_RESEND_FAILURE:
+          return { ...state, errors: payload }
       }
       break
     default:
       console.log('Unknown action')
-      return args.state
+      return { ...state }
   }
 }

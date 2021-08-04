@@ -1,7 +1,7 @@
-import ApiUtils from '../../helpers/ApiUtils'
-import FormCsrf from '../../helpers/FormCsrf'
+import ApiUtils from '../helpers/ApiUtils'
+import FormCsrf from '../helpers/FormCsrf'
 
-const changePassword = (user) => {
+const changePassword = ({ user }: { user: any }): Promise<any> => {
   const token = FormCsrf.csrfToken()
 
   return fetch('/api/users/password', {
@@ -25,7 +25,7 @@ const changePassword = (user) => {
   .then(response => response.json())
 }
 
-const sendResetPasswordInstructions = (email) => {
+const sendResetPasswordInstructions = ({ email }: { email: string }): Promise<any> => {
   return fetch('/api/users/password', {
     method: 'POST',
     headers: {

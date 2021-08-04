@@ -1,41 +1,55 @@
 import * as React from 'react'
 import * as ReactRouterDOM from 'react-router-dom'
-import { connect } from 'react-redux'
 import axios from 'axios'
-
-import type { UserT } from '../model.types'
+import { Redirect } from 'react-router-dom'
+import capitalize from 'lodash/capitalize'
 
 import {
   Container,
-  Spinner,
   Table,
 } from 'react-bootstrap'
 
 import { DispatchLoadingContext } from './LoadingProvider'
+import { DispatchLoginContext, LoginContext } from './login/LoginProvider'
 
-type PropsT = {
-  user: UserT,
+type EntryT = {
+  category: string,
+  end_at: string,
+  id: number,
+  start_at: string,
+  length: string,
 }
 
-const Sheet: React.FC<PropsT> = (props: PropsT) => {
+const Sheet: React.FC = () => {
   const { id } = ReactRouterDOM.useParams()
-  const { user } = props
+  const { user } = React.useContext(LoginContext)
+  const dispatch = React.useContext(DispatchLoginContext)
 
-  const dispatchLoading = React.useContext(DispatchLoadingContext)
-  const [entries, setEntries] = React.useState([])
+  const setLoading = React.useContext(DispatchLoadingContext)
+  const [entries, setEntries] = React.useState<Array<EntryT>>([])
+  const [redirect, setRedirect] = React.useState(false)
 
   React.useEffect(() => {
-    dispatchLoading(true)
+    setLoading(true)
 
     axios.get(`/api/users/${user.id}/timesheets/${id}/entries`, { params: { token: user.token } })
       .then(response => {
-        dispatchLoading(false)
+        setLoading(false)
         setEntries(response.data.entries)
+      })
+      .catch(error => {
+        if (error.response && error.response.status === 401) {
+          dispatch({ type: 'logout' })
+          dispatch({ type: 'alert', use: 'ALERT_ERROR', payload: 'Token expired' })
+          setLoading(false)
+          setRedirect(true)
+        }
       })
   }, [])
 
   return (
     <Container>
+      { redirect && <Redirect to="/users/sign_in" /> }
       <Table borderless hover responsive striped>
         <caption>Hours Logged</caption>
         { entries.length > 0 && (
@@ -44,6 +58,7 @@ const Sheet: React.FC<PropsT> = (props: PropsT) => {
               <th>Start</th>
               <th>End</th>
               <th>Category</th>
+              <th>Length</th>
             </tr>
           </thead>
         )}
@@ -53,6 +68,7 @@ const Sheet: React.FC<PropsT> = (props: PropsT) => {
               <td>{entry.start_at}</td>
               <td>{entry.end_at}</td>
               <td>{entry.category}</td>
+              <td>{capitalize(entry.length)}</td>
             </tr>
           ))}
         </tbody>
@@ -61,9 +77,4 @@ const Sheet: React.FC<PropsT> = (props: PropsT) => {
   )
 }
 
-function mapStateToProps(state) {
-  const { user } = state.authentication
-  return { user }
-}
-
-export default connect(mapStateToProps)(Sheet)
+export default Sheet

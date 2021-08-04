@@ -1,9 +1,6 @@
 import * as React from 'react' // we need this to make JSX compile
 import * as ReactDOM from 'react-dom'
 import * as Router from 'react-router-dom'
-import { Provider, connect } from 'react-redux'
-
-import { store } from '../src/config/stores'
 
 import {
   Navbar,
@@ -14,29 +11,20 @@ import 'bootstrap/dist/css/bootstrap.css'
 import './app.css'
 
 import Admin from './components/Admin'
-import FlashMessages from '../src/alerts/FlashMessages'
 import Sheet from './components/Sheet'
 import Sheets from './components/Sheets'
 import LoadingModal from './components/LoadingModal'
+import LoginRouter from './components/login/Router'
 import { LoadingProvider } from './components/LoadingProvider'
+import { LoginProvider, LoginContext, DispatchLoginContext } from './components/login/LoginProvider'
 
-//import DeviseConfirmationsNew from "../src/devise/confirmations/DeviseConfirmationsNew"
-//import DeviseConfirmationsShow from "../src/devise/confirmations/DeviseConfirmationsShow"
-//import DevisePasswordsNew from "../src/devise/passwords/DevisePasswordsNew"
-//import DevisePasswordsEdit from "../src/devise/passwords/DevisePasswordsEdit"
-//import DeviseRegistrationsNew from "../src/devise/registrations/DeviseRegistrationsNew"
-import DeviseSessionsNew from '../src/devise/sessions/DeviseSessionsNew'
-//import DeviseUnlocksNew from "../src/devise/unlocks/DeviseUnlocksNew"
-//import DeviseUnlocksShow from "../src/devise/unlocks/DeviseUnlocksShow"
-import sessionActions from '../src/devise/sessions/actions'
+import FlashMessages from './components/login/alerts/FlashMessages'
+import DeviseSessionsNew from './components/login/login/sessions/DeviseSessionsNew'
+import sessionActions from './components/login/login/sessions/actions'
 
-type AppPropsT = {
-  dispatch: any,
-  user: any,
-}
-
-export const App: React.FC<AppPropsT> = (props: AppPropsT) => {
-  const { user } = props
+export const App: React.FC = () => {
+  const { user } = React.useContext(LoginContext)
+  const dispatchLogin = React.useContext(DispatchLoginContext)
   const [validUser, setValidUser] = React.useState(user.valid)
 
   React.useEffect(() => {
@@ -44,7 +32,7 @@ export const App: React.FC<AppPropsT> = (props: AppPropsT) => {
   }, [user])
 
   function onLogout() {
-    props.dispatch(sessionActions.logout())
+    sessionActions.logout({ dispatch: dispatchLogin })
   }
 
   return (
@@ -82,7 +70,7 @@ export const App: React.FC<AppPropsT> = (props: AppPropsT) => {
             </Nav>
           </Navbar>
           <FlashMessages />
-          <Router.Switch>
+          <LoginRouter>
             { validUser && (
               <React.Fragment>
                 <Router.Route exact path="/" component={Sheets} />
@@ -95,25 +83,18 @@ export const App: React.FC<AppPropsT> = (props: AppPropsT) => {
             { !validUser && (
               <Router.Route path="/" component={DeviseSessionsNew} />
             )}
-          </Router.Switch>
+          </LoginRouter>
         </div>
       </Router.BrowserRouter>
     </LoadingProvider>
   )
 }
 
-function mapStateToProps(state) {
-  const { user } = state.authentication
-  return { user }
-}
-
-const ConnectedApp = connect(mapStateToProps)(App)
-
 document.addEventListener('DOMContentLoaded', () => {
   ReactDOM.render(
-    <Provider store={store}>
-      <ConnectedApp/>
-    </Provider>,
+    <LoginProvider>
+      <App/>
+    </LoginProvider>,
     document.body.appendChild(document.createElement('div')),
   )
 })

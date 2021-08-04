@@ -1,5 +1,4 @@
 import * as React from 'react'
-import { connect } from 'react-redux'
 import { Link } from 'react-router-dom'
 import qs from 'query-string'
 import {
@@ -8,7 +7,7 @@ import {
 } from 'react-bootstrap'
 
 import passwordActions from './actions'
-import FormCsrfInput from '../../helpers/FormCsrfInput'
+import FormCsrfInput from '../helpers/FormCsrfInput'
 
 type PropsT = {
   dispatch: any,
@@ -106,4 +105,4 @@ function mapStateToProps(state) {
   }
 }
 
-export default connect(mapStateToProps)(DevisePasswordsEdit)
+export default DevisePasswordsEdit

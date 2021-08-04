@@ -1,64 +1,49 @@
-import alertActions from '../../alerts/actions'
-import deviseConstants from '../constants'
-import history from '../../helpers/History'
+import loginConstants from '../constants'
+import alertActions from '../alerts/actions'
+import history from '../helpers/History'
 import passwordService from './services'
 
-const changePassword = (user) => {
-  const request = (user) => {
-    return { type: deviseConstants.CHANGE_PASSWORD_REQUEST, user }
-  }
-  const success = (user) => {
-    return { type: deviseConstants.CHANGE_PASSWORD_SUCCESS, user }
-  }
-  const failure = (error) => {
-    return { type: deviseConstants.CHANGE_PASSWORD_FAILURE, error }
-  }
+const changePassword = ({ user, dispatch }: { user: any, dispatch: (any) => void }): void => {
+  const { email } = user
+  const request = ({ email }: { email: string }): { type: string, use: string, payload: any } => ({ type: loginConstants.PASSWORD, use: loginConstants.CHANGE_PASSWORD_REQUEST, payload: email })
+  const success = ({ user }: { user: any }): { type: string, use: string, payload: any } => ({ type: loginConstants.PASSWORD, use: loginConstants.CHANGE_PASSWORD_SUCCESS, payload: user })
+  const failure = ({ error }: { error: any }): { type: string, use: string, payload: any } => ({ type: loginConstants.PASSWORD, use: loginConstants.CHANGE_PASSWORD_FAILURE, payload: error.errors })
 
-  return dispatch => {
-    dispatch(request({ user }))
+  dispatch(request({ email }))
 
-    passwordService.changePassword(user)
-      .then(
-        user => {
-          dispatch(success(user))
-          history.push('/users/sign_in')
-          dispatch(alertActions.success('Password changed successfully'))
-        },
-        error => {
-          dispatch(failure(error))
-          dispatch(alertActions.error('Something prevented the password update'))
-        }
-      )
-  }
+  passwordService.changePassword({ user })
+    .then(
+      user => {
+        dispatch(success({ user }))
+        history.push('/users/sign_in')
+        alertActions.success({ dispatch, message: 'Password changed successfully' })
+      },
+      error => {
+        dispatch(failure({ error }))
+        alertActions.error({ dispatch, message: 'Something prevented the password update' })
+      }
+    )
 }
 
-const sendPasswordInstructions = (user) => {
+const sendPasswordInstructions = ({ user, dispatch }: { user: any, dispatch: (any) => void }): void => {
   const { email } = user
+  const request = ({ email }: { email: string }): { type: string, use: string, payload: any } => ({ type: loginConstants.PASSWORD, use: loginConstants.PASSWORD_RESET_REQUEST, payload: email })
+  const success = ({ user }: { user: any }): { type: string, use: string, payload: any } => ({ type: loginConstants.PASSWORD, use: loginConstants.PASSWORD_RESET_SUCCESS, payload: user })
+  const failure = ({ error }: { error: any }): { type: string, use: string, payload: any } => ({ type: loginConstants.PASSWORD, use: loginConstants.PASSWORD_RESET_FAILURE, payload: error.errors })
 
-  const request = (email) => {
-    return { type: deviseConstants.PASSWORD_RESET_REQUEST, email }
-  }
-  const success = (email) => {
-    return { type: deviseConstants.PASSWORD_RESET_SUCCESS, email }
-  }
-  const failure = (error) => {
-    return { type: deviseConstants.PASSWORD_RESET_FAILURE, errors: error }
-  }
+  dispatch(request({ email }))
 
-  return dispatch => {
-    dispatch(request(email))
+  passwordService.sendResetPasswordInstructions({ email })
+    .then(() => {
+      dispatch(success({ user }))
+      history.push('/users/sign_in')
+      alertActions.success({ dispatch, message: 'You will receive an email with instructions for how to change your password in a few minutes.' })
+    })
+    .catch(error => {
+      dispatch(failure({ error }))
+      alertActions.error({ dispatch, message: 'Something prevented sending the password instructions email' })
+    })
 
-    passwordService.sendResetPasswordInstructions(email)
-      .then(() => {
-        dispatch(success(user))
-        history.push('/users/sign_in')
-        dispatch(alertActions.success('You will receive an email with instructions for how to change your password in a few minutes.'))
-      })
-      .catch(error => {
-        dispatch(failure(error))
-        dispatch(alertActions.error('Something prevented sending the password instructions email'))
-      })
-  }
 }
 
 export default {

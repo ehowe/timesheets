@@ -1,5 +1,4 @@
 import * as React from 'react'
-import { connect } from 'react-redux'
 
 import {
   Container,
@@ -13,4 +12,4 @@ const Admin: React.FC = () => {
   )
 }
 
-export default connect()(Admin)
+export default Admin
