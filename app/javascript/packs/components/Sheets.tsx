@@ -20,6 +20,8 @@ const Sheets: React.FC = () => {
   const [sheets, setSheets] = React.useState([])
   const [redirect, setRedirect] = React.useState(false)
 
+  const headerText = sheets.length > 0 ? 'Select a pay period' : 'No timesheets found'
+
   React.useEffect(() => {
     setLoading(true)
 
@@ -43,13 +45,11 @@ const Sheets: React.FC = () => {
     <Container>
       { redirect && <Redirect to="/users/sign_in" /> }
       <Table borderless hover responsive striped>
-        { sheets.length > 0 && (
-          <thead>
-            <tr>
-              <th className="timesheetHeader">Select a pay sheet</th>
-            </tr>
-          </thead>
-        )}
+        <thead>
+          <tr>
+            <th className="timesheetHeader">{headerText}</th>
+          </tr>
+        </thead>
         <tbody>
           { sheets.map(sheet => (
             <tr key={sheet.id}>

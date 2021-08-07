@@ -82,7 +82,7 @@ export const App: React.FC = () => {
                 ? (
                   <Nav.Link href="#" onClick={onLogout}>Logout</Nav.Link>
                 ) : (
-                  <Nav.Link href="/login">Login</Nav.Link>
+                  <Nav.Link href="/users/sign_in">Login</Nav.Link>
                 )
               }
             </Nav.Item>
