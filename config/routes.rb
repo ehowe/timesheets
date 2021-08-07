@@ -3,10 +3,8 @@ Rails.application.routes.draw do
   # folder.
   scope :api, constraints: { format: :json } do
     devise_for :users, controllers: {
-      confirmations: "devise/confirmations",
-      passwords:     "devise/passwords",
-      sessions:      "sessions",
-      unlocks:       "devise/unlocks"
+      registrations: "users/registrations",
+      sessions:      "users/sessions",
     }
 
     resources :users, only: [] do

@@ -1,18 +1,18 @@
 import alertActions from '../../alerts/actions'
 import loginConstants from '../../constants'
 import history from '../../helpers/History'
-import sessionService from './services'
+import client from '../../client'
 
-import type { LoginPropsT } from './types'
+import { FormActionT, FormUserT } from '../../types'
 
-const login = ({ email, password, dispatch }: LoginPropsT): void => {
+const login = ({ user, dispatch }: FormActionT): void => {
   const request = ({ email }: { email: string }): { type: string, use: string, payload: any } => ({ type: loginConstants.LOGIN, use: loginConstants.LOGIN_REQUEST, payload: email })
-  const success = ({ user }: { user: any }): { type: string, use: string, payload: any } => ({ type: loginConstants.LOGIN, use: loginConstants.LOGIN_SUCCESS, payload: user })
+  const success = ({ user }: { user: FormUserT }): { type: string, use: string, payload: any } => ({ type: loginConstants.LOGIN, use: loginConstants.LOGIN_SUCCESS, payload: user })
   const failure = ({ error }: { error: any }): { type: string, use: string, payload: any } => ({ type: loginConstants.LOGIN, use: loginConstants.LOGIN_FAILURE, payload: error.errors })
 
-  dispatch(request({ email }))
+  dispatch(request({ email: user.email }))
 
-  sessionService.login({ email, password })
+  client.request({ path: '/api/users/sign_in', data: { user }, method: 'post' })
     .then(
       user => {
         dispatch(success({ user }))
@@ -26,9 +26,12 @@ const login = ({ email, password, dispatch }: LoginPropsT): void => {
     )
 }
 
-const logout = ({ dispatch }: { dispatch: (any) => void }): void => {
-  dispatch({ type: loginConstants.ALERT, use: loginConstants.ALERT_SUCCESS, payload: 'Logged out' })
-  dispatch({ type: loginConstants.LOGOUT })
+const logout = ({ dispatch }: FormActionT): void => {
+  client.request({ path: '/api/users/sign_out', method: 'delete' })
+    .then(() => {
+      dispatch({ type: loginConstants.ALERT, use: loginConstants.ALERT_SUCCESS, payload: 'Logged out' })
+      dispatch({ type: loginConstants.LOGOUT })
+    })
 }
 
 export default {

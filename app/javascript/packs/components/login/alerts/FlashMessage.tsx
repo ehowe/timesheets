@@ -25,7 +25,7 @@ const FlashMessage: React.FC<PropsT> = (props: PropsT) => {
   }, [])
 
   return (
-    <div role="alert" className={classnames('alert', `alert-${message.type}`, `alert-dismissible`, 'alert-absolute', visible ? 'alert-show' : 'alert-fade')} ref={ref}>
+    <div role="alert" className={classnames('alert', `alert-${message.type}`, `alert-dismissible`, visible ? 'alert-show' : 'alert-fade')} ref={ref}>
       <button type="button" className={classnames('btn-close', 'btn-close-white')} aria-label="Close" onClick={onDismiss} data-bs-dismiss="alert"/>
       {message.text}
     </div>

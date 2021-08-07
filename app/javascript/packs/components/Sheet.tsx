@@ -2,7 +2,7 @@ import * as React from 'react'
 import * as ReactRouterDOM from 'react-router-dom'
 import axios from 'axios'
 import { Redirect } from 'react-router-dom'
-import capitalize from 'lodash/capitalize'
+import { capitalize } from 'lodash'
 
 import {
   Container,
@@ -21,7 +21,7 @@ type EntryT = {
 }
 
 const Sheet: React.FC = () => {
-  const { id } = ReactRouterDOM.useParams()
+  const { id } = ReactRouterDOM.useParams<{ id: string }>()
   const { user } = React.useContext(LoginContext)
   const dispatch = React.useContext(DispatchLoginContext)
 

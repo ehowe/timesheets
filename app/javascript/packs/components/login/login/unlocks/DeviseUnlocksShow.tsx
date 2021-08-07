@@ -1,8 +1,4 @@
 import * as React from 'react'
-import {
-  Col,
-  Row,
-} from 'react-bootstrap'
 
 import { DispatchLoginContext } from '../../LoginProvider'
 
@@ -19,15 +15,13 @@ const DeviseUnlocksShow: React.FC<PropsT> = (props: PropsT) => {
     const urlParams = new URLSearchParams(props.location.search)
     const token = urlParams.get('unlock_token')
 
-    unlockActions.unlock({ dispatch, token })
+    unlockActions.unlock({ dispatch, user: { token } })
   }, [])
 
   return (
-    <Row>
-      <Col md={{ span: 6, offset: 3 }}>
-        <h2>Unlocking your account ...</h2>
-      </Col>
-    </Row>
+    <div>
+      <h2>Unlocking your account...</h2>
+    </div>
   )
 }
 

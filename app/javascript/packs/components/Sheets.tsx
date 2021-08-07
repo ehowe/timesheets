@@ -1,5 +1,6 @@
 import * as React from 'react'
 import axios from 'axios'
+import * as Cookies from 'js-cookie'
 import { Redirect } from 'react-router-dom'
 
 import { DispatchLoadingContext } from './LoadingProvider'
@@ -22,7 +23,8 @@ const Sheets: React.FC = () => {
   React.useEffect(() => {
     setLoading(true)
 
-    axios.get(`/api/users/${user.id}/timesheets`, { params: { token: user.token } })
+    const token = Cookies.get('jwt')
+    axios.get(`/api/users/${user.id}/timesheets`, { params: { token: token } })
       .then(response => {
         setLoading(false)
         setSheets(response.data.sheets)

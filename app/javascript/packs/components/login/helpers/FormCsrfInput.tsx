@@ -12,7 +12,7 @@ const FormCsrfInput: React.FC = () => (
     type="hidden"
     name="authenticity_token"
     value={FormCsrf.csrfToken()}
-    readOnly={true}
+    readOnly
   />
 )
 

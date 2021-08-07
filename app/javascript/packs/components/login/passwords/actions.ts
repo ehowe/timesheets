@@ -1,17 +1,19 @@
+import client from '../client'
 import loginConstants from '../constants'
 import alertActions from '../alerts/actions'
 import history from '../helpers/History'
-import passwordService from './services'
 
-const changePassword = ({ user, dispatch }: { user: any, dispatch: (any) => void }): void => {
+import { FormActionT, FormUserT } from '../types'
+
+const changePassword = ({ user, dispatch }: FormActionT): void => {
   const { email } = user
   const request = ({ email }: { email: string }): { type: string, use: string, payload: any } => ({ type: loginConstants.PASSWORD, use: loginConstants.CHANGE_PASSWORD_REQUEST, payload: email })
-  const success = ({ user }: { user: any }): { type: string, use: string, payload: any } => ({ type: loginConstants.PASSWORD, use: loginConstants.CHANGE_PASSWORD_SUCCESS, payload: user })
+  const success = ({ user }: { user: FormUserT }): { type: string, use: string, payload: any } => ({ type: loginConstants.PASSWORD, use: loginConstants.CHANGE_PASSWORD_SUCCESS, payload: user })
   const failure = ({ error }: { error: any }): { type: string, use: string, payload: any } => ({ type: loginConstants.PASSWORD, use: loginConstants.CHANGE_PASSWORD_FAILURE, payload: error.errors })
 
   dispatch(request({ email }))
 
-  passwordService.changePassword({ user })
+  client.request({ path: '/api/users/password', method: 'patch', data: user })
     .then(
       user => {
         dispatch(success({ user }))
@@ -25,7 +27,7 @@ const changePassword = ({ user, dispatch }: { user: any, dispatch: (any) => void
     )
 }
 
-const sendPasswordInstructions = ({ user, dispatch }: { user: any, dispatch: (any) => void }): void => {
+const sendPasswordInstructions = ({ user, dispatch }: FormActionT): void => {
   const { email } = user
   const request = ({ email }: { email: string }): { type: string, use: string, payload: any } => ({ type: loginConstants.PASSWORD, use: loginConstants.PASSWORD_RESET_REQUEST, payload: email })
   const success = ({ user }: { user: any }): { type: string, use: string, payload: any } => ({ type: loginConstants.PASSWORD, use: loginConstants.PASSWORD_RESET_SUCCESS, payload: user })
@@ -33,7 +35,7 @@ const sendPasswordInstructions = ({ user, dispatch }: { user: any, dispatch: (an
 
   dispatch(request({ email }))
 
-  passwordService.sendResetPasswordInstructions({ email })
+  client.request({ path: '/api/users/password', method: 'post', data: user })
     .then(() => {
       dispatch(success({ user }))
       history.push('/users/sign_in')

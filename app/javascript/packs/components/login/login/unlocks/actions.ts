@@ -1,16 +1,18 @@
 import alertActions from '../../alerts/actions'
 import history from '../../helpers/History'
 import loginConstants from '../../constants'
-import unlockService from './service'
+import client from '../../client'
 
-const resendUnlock = ({ user, dispatch }: { user: any, dispatch: (any) => void }): void => {
-  const request = ({ user }: { user: any }): { type: string, use: string, payload: any } => ({ type: loginConstants.UNLOCK, use: loginConstants.UNLOCK_RESEND_REQUEST, payload: user })
-  const success = ({ user }: { user: any }): { type: string, use: string, payload: any } => ({ type: loginConstants.UNLOCK, use: loginConstants.UNLOCK_RESEND_SUCCESS, payload: user })
+import { FormActionT, FormUserT } from '../../types'
+
+const resendUnlock = ({ user, dispatch }: FormActionT): void => {
+  const request = ({ user }: { user: FormUserT }): { type: string, use: string, payload: any } => ({ type: loginConstants.UNLOCK, use: loginConstants.UNLOCK_RESEND_REQUEST, payload: user })
+  const success = ({ user }: { user: FormUserT }): { type: string, use: string, payload: any } => ({ type: loginConstants.UNLOCK, use: loginConstants.UNLOCK_RESEND_SUCCESS, payload: user })
   const failure = ({ error }: { error: any }): { type: string, use: string, payload: any } => ({ type: loginConstants.UNLOCK, use: loginConstants.UNLOCK_RESEND_FAILURE, payload: error.errors })
 
   dispatch(request({ user }))
 
-  unlockService.resendUnlock({ user })
+  client.request({ path: '/api/users/unlock', method: 'post', data: user })
     .then(() => {
       dispatch(success({ user }))
       history.push('/users/sign_in')
@@ -22,14 +24,14 @@ const resendUnlock = ({ user, dispatch }: { user: any, dispatch: (any) => void }
     })
 }
 
-const unlock = ({ token, dispatch }: { token: string, dispatch: (any) => void }): void => {
+const unlock = ({ user, dispatch }: FormActionT): void => {
   const request = ({ token }: { token: string }): { type: string, use: string, payload: any } => ({ type: loginConstants.UNLOCK, use: loginConstants.UNLOCK_REQUEST, payload: token })
-  const success = ({ user }: { user: any }): { type: string, use: string, payload: any } => ({ type: loginConstants.UNLOCK, use: loginConstants.UNLOCK_SUCCESS, payload: user })
+  const success = ({ user }: { user: FormUserT }): { type: string, use: string, payload: any } => ({ type: loginConstants.UNLOCK, use: loginConstants.UNLOCK_SUCCESS, payload: user })
   const failure = ({ error }: { error: any }): { type: string, use: string, payload: any } => ({ type: loginConstants.UNLOCK, use: loginConstants.UNLOCK_FAILURE, payload: error })
 
-  dispatch(request({ token }))
+  dispatch(request({ token: user.token }))
 
-  unlockService.unlock({ token })
+  client.request({ path: '/api/users/unlock', params: { 'unlock_token': user.token }, method: 'get' })
     .then(
       user => {
         dispatch(success({ user }))

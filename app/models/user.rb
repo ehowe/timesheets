@@ -1,7 +1,7 @@
 class User < Sequel::Model
   plugin :devise
 
-  devise :database_authenticatable, :recoverable
+  devise :database_authenticatable, :recoverable, :registerable
 
   many_to_many :payroll_categories,
     class: "PayrollCategory",
@@ -10,6 +10,12 @@ class User < Sequel::Model
     right_key: :category_id
 
   one_to_many :timesheets
+
+  def validate
+    super
+
+    errors.add(:email, "must be unique") if new? && User.where(email: self.email).count > 0
+  end
 
   def make_admin!
     update(admin: true)

@@ -1,18 +1,18 @@
-import { useContext } from 'react'
-
 import alertActions from '../../alerts/actions'
 import loginConstants from '../../constants'
 import history from '../../helpers/History'
-import confirmationService from './service'
+import client from '../../client'
 
-const confirm = ({ token, dispatch }: { token: string, dispatch: (any) => void }): void => {
+import { FormActionT, FormUserT } from '../../types'
+
+const confirm = ({ user, dispatch }: FormActionT): void => {
   const request = ({ token }: { token: string }): { type: string, use: string, payload: any } => ({ type: loginConstants.CONFIRM, use: loginConstants.CONFIRMATION_REQUEST, payload: token })
-  const success = ({ user }: { user: any }): { type: string, use: string, payload: any } => ({ type: loginConstants.CONFIRM, use: loginConstants.CONFIRMATION_SUCCESS, payload: user })
+  const success = ({ user }: { user: FormUserT }): { type: string, use: string, payload: any } => ({ type: loginConstants.CONFIRM, use: loginConstants.CONFIRMATION_SUCCESS, payload: user })
   const failure = ({ error }: { error: any }): { type: string, use: string, payload: any } => ({ type: loginConstants.CONFIRM, use: loginConstants.CONFIRMATION_FAILURE, payload: error.errors })
 
-  dispatch(request({ token }))
+  dispatch(request({ token: user.token }))
 
-  confirmationService.confirm(token)
+  client.request({ path: '/users/confirmation', method: 'get', params: { confirmation_token: user.token } })
     .then(user => {
       dispatch(success({ user }))
       history.push('/users/sign_in')
@@ -25,14 +25,14 @@ const confirm = ({ token, dispatch }: { token: string, dispatch: (any) => void }
     })
 }
 
-const resendConfirmation = ({ user, dispatch }: { user: any, dispatch: (any) => void }): void => {
-  const request = ({ user }: { user: string }): { type: string, use: string, payload: any } => ({ type: loginConstants.CONFIRM, use: loginConstants.CONFIRMATION_RESEND_REQUEST, payload: user })
-  const success = ({ user }: { user: any }): { type: string, use: string, payload: any } => ({ type: loginConstants.CONFIRM, use: loginConstants.CONFIRMATION_RESEND_SUCCESS, payload: user })
+const resendConfirmation = ({ user, dispatch }: FormActionT): void => {
+  const request = ({ user }: { user: FormUserT }): { type: string, use: string, payload: any } => ({ type: loginConstants.CONFIRM, use: loginConstants.CONFIRMATION_RESEND_REQUEST, payload: user })
+  const success = ({ user }: { user: FormUserT }): { type: string, use: string, payload: any } => ({ type: loginConstants.CONFIRM, use: loginConstants.CONFIRMATION_RESEND_SUCCESS, payload: user })
   const failure = ({ error }: { error: any }): { type: string, use: string, payload: any } => ({ type: loginConstants.CONFIRM, use: loginConstants.CONFIRMATION_RESEND_FAILURE, payload: error.errors })
 
   dispatch(request({ user }))
 
-  confirmationService.resendConfirmation(user)
+  client.request({ path: '/api/users/confirmation', method: 'post', data: user })
     .then(() => {
       dispatch(success({ user }))
       history.push('/users/sign_in')

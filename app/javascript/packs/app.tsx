@@ -3,8 +3,11 @@ import * as ReactDOM from 'react-dom'
 import * as Router from 'react-router-dom'
 
 import {
+  Container,
+  Col,
   Navbar,
   Nav,
+  Row,
 } from 'react-bootstrap'
 
 import 'bootstrap/dist/css/bootstrap.css'
@@ -21,70 +24,96 @@ import { LoginProvider, LoginContext, DispatchLoginContext } from './components/
 import FlashMessages from './components/login/alerts/FlashMessages'
 import DeviseSessionsNew from './components/login/login/sessions/DeviseSessionsNew'
 import sessionActions from './components/login/login/sessions/actions'
+import DeviseRegistrationsNew from './components/login/login/registrations/DeviseRegistrationsNew'
 
 export const App: React.FC = () => {
-  const { user } = React.useContext(LoginContext)
+  const { loggedIn, user } = React.useContext(LoginContext)
   const dispatchLogin = React.useContext(DispatchLoginContext)
-  const [validUser, setValidUser] = React.useState(user.valid)
-
-  React.useEffect(() => {
-    setValidUser(user.valid)
-  }, [user])
 
   function onLogout() {
     sessionActions.logout({ dispatch: dispatchLogin })
+  }
+
+  const NewUser: React.FC = () => {
+    const fields = [
+      {
+        id: "first_name",
+        name: 'first_name',
+        label: 'First Name',
+        type: 'text',
+      },
+      {
+        id: "last_name",
+        name: 'last_name',
+        label: 'Last Name',
+        type: 'text',
+      },
+    ]
+
+    return (
+      <DeviseRegistrationsNew additionalRequiredFields={fields} />
+    )
   }
 
   return (
     <LoadingProvider>
       <LoadingModal />
       <Router.BrowserRouter>
-        <div>
-          <Navbar variant="light" expand="md">
-            <Navbar.Brand href="/">Timesheets</Navbar.Brand>
-            { validUser && (
-              <Navbar.Text>{user.full_name}</Navbar.Text>
-            )}
-            <Nav className="ms-auto" navbar>
-              { validUser && (
-                <React.Fragment>
-                  { user.admin && (
-                    <Nav.Item>
-                      <Nav.Link href="/admin">Admin</Nav.Link>
-                    </Nav.Item>
-                  )}
-                  <Nav.Item>
-                    <Nav.Link href="/">Sheets</Nav.Link>
-                  </Nav.Item>
-                </React.Fragment>
-              )}
-              <Nav.Item>
-                { validUser
-                  ? (
-                    <Nav.Link href="#" onClick={onLogout}>Logout</Nav.Link>
-                  ) : (
-                    <Nav.Link href="/login">Login</Nav.Link>
-                  )
-                }
-              </Nav.Item>
-            </Nav>
-          </Navbar>
-          <FlashMessages />
-          <LoginRouter>
-            { validUser && (
+        <Navbar variant="light" expand="md">
+          <Navbar.Brand href="/">Timesheets</Navbar.Brand>
+          { loggedIn && (
+            <Navbar.Text>{user.full_name}</Navbar.Text>
+          )}
+          <Nav className="ms-auto" navbar>
+            { loggedIn && (
               <React.Fragment>
-                <Router.Route exact path="/" component={Sheets} />
-                <Router.Route path="/timesheets/:id" component={Sheet} />
                 { user.admin && (
-                  <Router.Route path="/admin" component={Admin} />
+                  <Nav.Item>
+                    <Nav.Link href="/admin">Admin</Nav.Link>
+                  </Nav.Item>
                 )}
+                <Nav.Item>
+                  <Nav.Link href="/">Sheets</Nav.Link>
+                </Nav.Item>
               </React.Fragment>
             )}
-            { !validUser && (
-              <Router.Route path="/" component={DeviseSessionsNew} />
-            )}
-          </LoginRouter>
-        </div>
+            <Nav.Item>
+              { loggedIn
+                ? (
+                  <Nav.Link href="#" onClick={onLogout}>Logout</Nav.Link>
+                ) : (
+                  <Nav.Link href="/login">Login</Nav.Link>
+                )
+              }
+            </Nav.Item>
+          </Nav>
+        </Navbar>
+        <Container fluid>
+          <Row>
+            <Col md={{ span: 2 }}>
+              <FlashMessages />
+            </Col>
+            <Col md={{ span: 8 }}>
+              <LoginRouter hide={['register']}>
+                { loggedIn && (
+                  <React.Fragment>
+                    <Router.Route exact path="/" component={Sheets} />
+                    <Router.Route path="/timesheets/:id" component={Sheet} />
+                    { user.admin && (
+                      <Router.Route path="/admin" component={Admin} />
+                    )}
+                  </React.Fragment>
+                )}
+                { !loggedIn && (
+                  <React.Fragment>
+                    <Router.Route exact path="/" component={DeviseSessionsNew} />
+                    <Router.Route path="/users/sign_up" component={NewUser} />
+                  </React.Fragment>
+                )}
+              </LoginRouter>
+            </Col>
+          </Row>
+        </Container>
       </Router.BrowserRouter>
     </LoadingProvider>
   )
@@ -92,7 +121,7 @@ export const App: React.FC = () => {
 
 document.addEventListener('DOMContentLoaded', () => {
   ReactDOM.render(
-    <LoginProvider>
+    <LoginProvider userCookieName="user">
       <App/>
     </LoginProvider>,
     document.body.appendChild(document.createElement('div')),

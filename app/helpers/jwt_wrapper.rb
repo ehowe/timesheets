@@ -2,12 +2,12 @@ module JwtWrapper
   module_function
 
   def encode(payload, expiration = nil)
-    expiration ||= Rails.application.secrets.jwt_expiration_hours
+    expiration ||= Rails.application.secrets.jwt_expiration_hours || 24
 
     payload        = payload.dup
     payload["exp"] = expiration.to_i.hours.from_now.to_i
 
-    JWT.encode payload, Rails.application.secrets.jwt_secret
+    JWT.encode({ value: payload }, Rails.application.secrets.jwt_secret)
   end
 
   def decode(token)
@@ -18,7 +18,7 @@ module JwtWrapper
     nil
   end
 
-  def expired?(token)
-    Time.at(decode(token)["exp"]) < Time.now
+  def expired?(decoded_token)
+    Time.at(decoded_token["exp"]) < Time.now
   end
 end
