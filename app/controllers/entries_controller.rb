@@ -2,7 +2,7 @@ class EntriesController < AuthenticatedApiController
   before_action :fetch_timesheet
 
   def create
-    operation = TimesheetEntries::Create.(params.permit(:payroll_category_id, :timesheet_id, :start_at, :end_at).to_h)
+    operation = TimesheetEntries::Create.(user: current_user, params: params.require(:entry).permit(:payroll_category_id, :timesheet_id, :start_at, :end_at).to_h)
 
     render json: operation.error, status: 422 and return unless operation.success?
 

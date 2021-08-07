@@ -2,10 +2,10 @@ module Timesheets
   module Create
     module_function
 
-    def call(params)
+    def call(user:, params:)
       Timesheet.db.transaction do
         begin
-          ts = Timesheet.find_or_create(params.symbolize_keys)
+          ts = Timesheet.find_or_create(params.symbolize_keys.merge(user_id: user.id))
 
           Result.new(:ok, TimesheetPresenter.display(ts))
         rescue => e

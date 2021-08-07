@@ -6,11 +6,5 @@ FactoryBot.define do
 
     password              { "pass" }
     password_confirmation { "pass" }
-
-    trait :with_jwt do
-      after(:create) do |user, evaluator|
-        user.token = JwtWrapper.encode(user_id: user.id)
-      end
-    end
   end
 end

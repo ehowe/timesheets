@@ -2,9 +2,12 @@ module TimesheetEntries
   module Create
     module_function
 
-    def call(params)
+    def call(user:, params:)
       start_at = Time.parse(params.delete(:start_at)) rescue nil
       end_at   = Time.parse(params.delete(:end_at)) rescue nil
+
+      return Result.new(:error, "timesheet_id is required") unless params[:timesheet_id]
+      return Result.new(:error, "Timesheet not found") unless user.timesheets_dataset[params.fetch(:timesheet_id).to_i]
 
       TimesheetEntry.db.transaction do
         begin

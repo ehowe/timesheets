@@ -1,6 +1,6 @@
 class TimesheetsController < AuthenticatedApiController
   def create
-    operation = Timesheets::Create.(params.permit(:pay_period_id, :user_id).to_h)
+    operation = Timesheets::Create.(user: current_user, params: params.require(:timesheet).permit(:pay_period_id).to_h)
 
     render json: operation.error, status: 422 and return unless operation.success?
 

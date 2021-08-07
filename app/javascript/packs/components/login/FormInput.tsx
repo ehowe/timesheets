@@ -30,7 +30,7 @@ const FormInput: React.FC<PropsT> = (props: PropsT) => {
       <label htmlFor={name}>{label}</label>
       <input onChange={onChange} type={inputType} id={name} name={name} className={classnames('form-control', { 'is-valid': showValid && isValid, 'is-invalid': showValid && !isValid })} aria-label={label}/>
       <div style={{ height: '1em' }} className="mb-1">
-        <div className="help-block h-100 text-muted">{ showValid && `${label} is required` }</div>
+        <div className="help-block h-100 text-muted">{ showValid && !isValid && `${label} is required` }</div>
       </div>
     </div>
   )
