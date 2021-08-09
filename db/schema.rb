@@ -17,6 +17,14 @@ Sequel.migration do
       index [:name], :name=>:payroll_categories_name_key, :unique=>true
     end
     
+    create_table(:payroll_schedules) do
+      primary_key :id, :type=>:Bignum
+      column :length_in_days, "integer", :null=>false
+      column :start_date, "text", :null=>false
+      column :start_time, "text", :null=>false
+      column :timezone, "text", :null=>false
+    end
+    
     create_table(:schema_migrations) do
       column :filename, "text", :null=>false
       
@@ -83,5 +91,7 @@ end
 self << "INSERT INTO \"schema_migrations\" (\"filename\") VALUES ('20210731214112_add_token_to_users.rb')"
 self << "INSERT INTO \"schema_migrations\" (\"filename\") VALUES ('20210801112240_create_sheets_schema.rb')"
 self << "INSERT INTO \"schema_migrations\" (\"filename\") VALUES ('20210801172232_add_admin_to_users.rb')"
+self << "INSERT INTO \"schema_migrations\" (\"filename\") VALUES ('20210807133543_create_payroll_schedules.rb')"
+self << "INSERT INTO \"schema_migrations\" (\"filename\") VALUES ('20210808194449_modify_payroll_schedules.rb')"
                 end
               end

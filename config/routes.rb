@@ -16,6 +16,12 @@ Rails.application.routes.draw do
         end
       end
     end
+
+    namespace :admin do
+      resources :payroll_schedules
+    end
+
+    resources :payroll_schedules, only: [:index, :show], module: "admin"
   end
 
   root "pages#index", as: :pages_index

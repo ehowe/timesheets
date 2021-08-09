@@ -1,4 +1,6 @@
 class AuthenticatedApiController < ActionController::Base
+  skip_before_action :verify_authenticity_token
+
   before_action :validate_jwt
 
   # The JWT is in the signed cookie jar and is sent back in that format

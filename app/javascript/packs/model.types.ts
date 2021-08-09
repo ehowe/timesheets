@@ -7,3 +7,12 @@ export type UserT = {
   token: string | null,
   valid: boolean,
 }
+
+export type ScheduleT = {
+  id: number,
+  length_in_days: number,
+  start_date: string,
+  start_day: string,
+  start_time: string,
+  timezone: string,
+}

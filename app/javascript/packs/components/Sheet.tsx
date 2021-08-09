@@ -1,6 +1,5 @@
 import * as React from 'react'
 import * as ReactRouterDOM from 'react-router-dom'
-import axios from 'axios'
 import { Redirect } from 'react-router-dom'
 import { capitalize } from 'lodash'
 
@@ -9,6 +8,7 @@ import {
   Table,
 } from 'react-bootstrap'
 
+import client from './client'
 import { DispatchLoadingContext } from './LoadingProvider'
 import { DispatchLoginContext, LoginContext } from './login/LoginProvider'
 
@@ -32,7 +32,7 @@ const Sheet: React.FC = () => {
   React.useEffect(() => {
     setLoading(true)
 
-    axios.get(`/api/users/${user.id}/timesheets/${id}/entries`, { params: { token: user.token } })
+    client.request({ path: `/api/users/${user.id}/timesheets/${id}/entries`, method: 'get' })
       .then(response => {
         setLoading(false)
         setEntries(response.data.entries)
