@@ -1,5 +1,5 @@
 class Admin::PayrollSchedulesController < AdminController
-  skip_before_action :ensure_admin, if: [:index, :show]
+  skip_before_action :ensure_admin, only: [:index, :show]
 
   def index
     operation = PayrollSchedules::List.call

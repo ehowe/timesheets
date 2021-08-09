@@ -23,6 +23,7 @@ const AdminPayroll: React.FC = () => {
   const setLoading = React.useContext(DispatchLoadingContext)
   const [open, setOpen] = React.useState(false)
   const [schedules, setSchedules] = React.useState([])
+  const [formError, setFormError] = React.useState(false)
 
   const INIT_STATE: StateT = {
     length_in_days: 7,
@@ -47,9 +48,15 @@ const AdminPayroll: React.FC = () => {
 
     client.request({ path: '/api/admin/payroll_schedules', method: 'post', data: { payroll_schedule: state } })
       .then(response => {
+        console.log(response)
         setOpen(false)
         setLoading(false)
         setSchedules([...schedules, response.data.schedule])
+      })
+      .catch(error => {
+        console.log(error)
+        setFormError(true)
+        setLoading(false)
       })
   }
 
@@ -90,6 +97,7 @@ const AdminPayroll: React.FC = () => {
       <Button variant="primary" onClick={() => setOpen(true)}>Create new schedule</Button>
       <Modal title="Create Schedule" handleClose={() => setOpen(false)} show={open}>
         <Form>
+          { formError && <p className="text-danger">There was an error completing this request. Please try again</p> }
           <Form.Group>
             <Form.Label>Start Date</Form.Label>
             <Form.Control type="date" name="start_date" onChange={handleChange} value={state.start_date}/>
