@@ -1,5 +1,6 @@
 import * as React from 'react'
 import { Redirect } from 'react-router-dom'
+import Select from 'react-select'
 
 import { ScheduleT } from '../model.types'
 
@@ -29,6 +30,7 @@ const Sheets: React.FC = () => {
 
   const NEW_TIMESHEET = {
     pay_period: '',
+    payroll_schedule: '',
   }
 
   const reducer = (state, update) => ({...state, ...update})
@@ -37,17 +39,20 @@ const Sheets: React.FC = () => {
   const headerText = sheets.length > 0 ? 'Select a pay period' : 'No timesheets found'
 
   React.useEffect(() => {
-    const payPeriod = payrollSchedules.find(schedule => schedule.id === parseInt(newTimesheet.pay_period))
+    if (newTimesheet.payroll_schedule.length === 0) return
 
-    if (!payPeriod) return
-
-    const startDate = Date.parse(payPeriod.start_date)
-
-    console.log(startDate)
-  }, [newTimesheet.pay_period])
+    client.request({ path: `/api/payroll_schedules/${newTimesheet.payroll_schedule}/date_ranges`, method: 'get' })
+      .then(response => {
+        setDateRanges(response.data.ranges.map((range: string) => ({ label: range, value: range })))
+      })
+  }, [newTimesheet.payroll_schedule])
 
   const handleChange = (e: any): void => {
     dispatchTimesheet({ [e.target.name]: e.target.value })
+  }
+
+  const handlePayPeriodChange = (e: any): void => {
+    dispatchTimesheet({ pay_period: e.value })
   }
 
   React.useEffect(() => {
@@ -68,11 +73,21 @@ const Sheets: React.FC = () => {
       })
 
     client.request({ path: '/api/payroll_schedules', method: 'get' })
-      .then(response => setPayrollSchedules(response.data.payroll_schedules))
+      .then(response => {
+        if (response.data.payroll_schedules.length > 0) {
+          dispatchTimesheet({ payroll_schedule: response.data.payroll_schedules[0].id })
+        }
+
+        setPayrollSchedules(response.data.payroll_schedules)
+      })
   }, [])
 
   const scheduleName = (schedule: ScheduleT) => {
     return `${schedule.start_day} ${schedule.start_time} - ${schedule.start_day} ${schedule.start_time} (${schedule.length_in_days} days)`
+  }
+
+  const handleSubmit = (): void => {
+    console.log(newTimesheet)
   }
 
   return (
@@ -98,13 +113,20 @@ const Sheets: React.FC = () => {
       <Modal title="Create Timesheet" handleClose={() => setOpen(false)} show={open}>
         <Form>
           <Form.Group>
-            <Form.Label>Pay Period</Form.Label>
-            <Form.Select onChange={handleChange} name="pay_period" value={newTimesheet.pay_period}>
-              <option>Select a pay period</option>
+            <Form.Label>Payroll Schedule</Form.Label>
+            <Form.Select onChange={handleChange} name="payroll_schedule" value={newTimesheet.payroll_schedule}>
+              <option>Select a payroll schedule</option>
               { payrollSchedules.map((schedule: ScheduleT) => (
                 <option key={schedule.id} value={schedule.id}>{scheduleName(schedule)}</option>
               ))}
             </Form.Select>
+          </Form.Group>
+          <Form.Group>
+            <Form.Label>Date range in schedule</Form.Label>
+            <Select onChange={handlePayPeriodChange} value={dateRanges.filter(range => range.value == newTimesheet.pay_period)} options={dateRanges} />
+          </Form.Group>
+          <Form.Group className="mt-3">
+            <Button onClick={handleSubmit}>Submit</Button>
           </Form.Group>
         </Form>
       </Modal>

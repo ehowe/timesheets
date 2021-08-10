@@ -21,7 +21,11 @@ Rails.application.routes.draw do
       resources :payroll_schedules
     end
 
-    resources :payroll_schedules, only: [:index, :show], module: "admin"
+    resources :payroll_schedules, only: [:index, :show], module: "admin" do
+      member do
+        get :date_ranges
+      end
+    end
   end
 
   root "pages#index", as: :pages_index

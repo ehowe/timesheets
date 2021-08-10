@@ -1,8 +1,10 @@
 require_relative "../../rails_helper"
 
 describe Timesheets::Create do
-  let(:user)       { create(:user) }
-  let(:pay_period) { create(:pay_period) }
+  let(:user)             { create(:user) }
+  let(:payroll_schedule) { create(:payroll_schedule) }
+
+  before(:each) { allow(Time).to receive(:now).and_return(Time.parse("08-10-2021 07:00 -04:00")) }
 
   it "creates a new timesheet" do
     expect do

@@ -1,14 +1,5 @@
 Sequel.migration do
   change do
-    create_table(:pay_periods) do
-      primary_key :id, :type=>:Bignum
-      column :start_at, "timestamp with time zone", :null=>false
-      column :end_at, "timestamp with time zone", :null=>false
-      
-      index [:end_at]
-      index [:start_at]
-    end
-    
     create_table(:payroll_categories) do
       primary_key :id, :type=>:Bignum
       column :name, "text"
@@ -52,14 +43,14 @@ Sequel.migration do
       index [:reset_password_token], :unique=>true
     end
     
-    create_table(:timesheets) do
+    create_table(:pay_periods) do
       primary_key :id, :type=>:Bignum
-      foreign_key :user_id, :users, :type=>"bigint", :null=>false, :key=>[:id]
-      foreign_key :pay_period_id, :pay_periods, :type=>"bigint", :null=>false, :key=>[:id]
+      column :start_at, "timestamp with time zone", :null=>false
+      column :end_at, "timestamp with time zone", :null=>false
+      foreign_key :payroll_schedule_id, :payroll_schedules, :key=>[:id]
       
-      index [:pay_period_id]
-      index [:user_id]
-      index [:user_id, :pay_period_id], :unique=>true
+      index [:end_at]
+      index [:start_at]
     end
     
     create_table(:user_categories) do
@@ -70,6 +61,16 @@ Sequel.migration do
       index [:user_id]
     end
     
+    create_table(:timesheets) do
+      primary_key :id, :type=>:Bignum
+      foreign_key :user_id, :users, :type=>"bigint", :null=>false, :key=>[:id]
+      foreign_key :pay_period_id, :pay_periods, :type=>"bigint", :null=>false, :key=>[:id]
+
+      index [:pay_period_id]
+      index [:user_id]
+      index [:user_id, :pay_period_id], :unique=>true
+    end
+
     create_table(:timesheet_entries) do
       primary_key :id, :type=>:Bignum
       column :start_at, "timestamp with time zone", :null=>false
@@ -93,5 +94,6 @@ self << "INSERT INTO \"schema_migrations\" (\"filename\") VALUES ('2021080111224
 self << "INSERT INTO \"schema_migrations\" (\"filename\") VALUES ('20210801172232_add_admin_to_users.rb')"
 self << "INSERT INTO \"schema_migrations\" (\"filename\") VALUES ('20210807133543_create_payroll_schedules.rb')"
 self << "INSERT INTO \"schema_migrations\" (\"filename\") VALUES ('20210808194449_modify_payroll_schedules.rb')"
+self << "INSERT INTO \"schema_migrations\" (\"filename\") VALUES ('20210810013341_add_payroll_schedule_id_to_pay_periods.rb')"
                 end
               end
