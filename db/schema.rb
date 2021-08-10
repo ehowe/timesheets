@@ -38,6 +38,7 @@ Sequel.migration do
       column :last_sign_in_ip, "inet"
       column :token, "text"
       column :admin, "boolean", :default=>false, :null=>false
+      column :locked, "boolean", :default=>false, :null=>false
       
       index [:email], :unique=>true
       index [:reset_password_token], :unique=>true
@@ -98,5 +99,6 @@ self << "INSERT INTO \"schema_migrations\" (\"filename\") VALUES ('2021080819444
 self << "INSERT INTO \"schema_migrations\" (\"filename\") VALUES ('20210810013341_add_payroll_schedule_id_to_pay_periods.rb')"
 self << "INSERT INTO \"schema_migrations\" (\"filename\") VALUES ('20210810103125_set_payroll_schedule_id_not_null_on_pay_periods.rb')"
 self << "INSERT INTO \"schema_migrations\" (\"filename\") VALUES ('20210810104040_add_uniqueness_constraint_to_pay_periods.rb')"
+self << "INSERT INTO \"schema_migrations\" (\"filename\") VALUES ('20210810171025_add_locked_to_users.rb')"
                 end
               end

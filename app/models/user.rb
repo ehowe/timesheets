@@ -1,7 +1,13 @@
 class User < Sequel::Model
+  dataset_module do
+    def order_by_last_name
+      order(:last_name)
+    end
+  end
+
   plugin :devise
 
-  devise :database_authenticatable, :recoverable, :registerable
+  devise :database_authenticatable, :recoverable, :registerable, :lockable
 
   many_to_many :payroll_categories,
     class: "PayrollCategory",
@@ -11,6 +17,10 @@ class User < Sequel::Model
 
   one_to_many :timesheets,
     dataset: -> { Timesheet.order_by_desc_pay_period_end.where(user_id: id) }
+
+  def active_for_authentication?
+    super && !locked
+  end
 
   def validate
     super

@@ -15,6 +15,11 @@ Rails.application.routes.draw do
 
     namespace :admin do
       resources :payroll_schedules
+      resources :users do
+        member do
+          put :lock
+        end
+      end
     end
 
     resources :payroll_schedules, only: [:index, :show], module: "admin" do

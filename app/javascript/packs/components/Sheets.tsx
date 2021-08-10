@@ -1,5 +1,5 @@
 import * as React from 'react'
-import { Redirect } from 'react-router-dom'
+import { Redirect, useLocation } from 'react-router-dom'
 import Select from 'react-select'
 
 import { PayPeriodT, ScheduleT } from '../model.types'
@@ -11,9 +11,9 @@ import client from './client'
 
 import {
   Button,
-  Container,
   Form,
   Nav,
+  Row,
   Table,
 } from 'react-bootstrap'
 
@@ -23,9 +23,11 @@ const Sheets: React.FC = () => {
   const setLoading = React.useContext(DispatchLoadingContext)
   const [sheets, setSheets] = React.useState([])
   const [payrollSchedules, setPayrollSchedules] = React.useState([])
-  const [redirect, setRedirect] = React.useState(false)
+  const [redirectToLogin, setRedirectToLogin] = React.useState(false)
+  const [redirectToSheet, setRedirectToSheet] = React.useState(false)
   const [open, setOpen] = React.useState(false)
   const [dateRanges, setDateRanges] = React.useState([])
+  const [redirectSheet, setRedirectSheet] = React.useState(null)
 
   const NEW_TIMESHEET = {
     pay_period_id: '',
@@ -67,7 +69,7 @@ const Sheets: React.FC = () => {
           dispatch({ type: 'logout' })
           dispatch({ type: 'alert', use: 'ALERT_ERROR', payload: 'Session expired' })
           setLoading(false)
-          setRedirect(true)
+          setRedirectToLogin(true)
         }
       })
 
@@ -90,9 +92,10 @@ const Sheets: React.FC = () => {
 
     client.request({ path: '/api/timesheets', method: 'post', data: { timesheet: { pay_period_id: newTimesheet.pay_period_id } } })
       .then(response => {
-        setSheets([ response.data, ...sheets ])
+        setRedirectSheet(response.data.id)
         setLoading(false)
         setOpen(false)
+        setRedirectToSheet(true)
       })
       .catch(error => {
         console.log(error)
@@ -101,8 +104,9 @@ const Sheets: React.FC = () => {
   }
 
   return (
-    <Container>
-      { redirect && <Redirect to="/users/sign_in" /> }
+    <Row>
+      { redirectToLogin && <Redirect to="/users/sign_in" /> }
+      { redirectToSheet && <Redirect to={{ pathname: `/sheets/${redirectSheet}`, state: { referrer: useLocation() } }} /> }
       <Table borderless hover responsive striped>
         <thead>
           <tr>
@@ -140,7 +144,7 @@ const Sheets: React.FC = () => {
           </Form.Group>
         </Form>
       </Modal>
-    </Container>
+    </Row>
   )
 }
 

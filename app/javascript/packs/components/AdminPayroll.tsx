@@ -48,7 +48,6 @@ const AdminPayroll: React.FC = () => {
 
     client.request({ path: '/api/admin/payroll_schedules', method: 'post', data: { payroll_schedule: state } })
       .then(response => {
-        console.log(response)
         setOpen(false)
         setLoading(false)
         setSchedules([...schedules, response.data.schedule])
