@@ -7,13 +7,9 @@ Rails.application.routes.draw do
       sessions:      "users/sessions",
     }
 
-    resources :users, only: [] do
+    resources :timesheets, only: [:create, :destroy, :show, :update, :index] do
       member do
-        resources :timesheets, only: [:create, :destroy, :show, :update, :index] do
-          member do
-            resources :entries, only: [:create, :destroy, :update, :index]
-          end
-        end
+        resources :entries, only: [:create, :destroy, :update, :index]
       end
     end
 
@@ -23,12 +19,12 @@ Rails.application.routes.draw do
 
     resources :payroll_schedules, only: [:index, :show], module: "admin" do
       member do
-        get :date_ranges
+        get :pay_periods
       end
     end
   end
 
   root "pages#index", as: :pages_index
 
-  match "*path", to: "pages#index", via: :all
+  match "*path", to: "pages#index", via: :all, constraints: -> (req) { !(req.fullpath =~ /^\/api\/.*/) }
 end

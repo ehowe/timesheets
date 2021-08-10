@@ -1,7 +1,7 @@
 require_relative "../rails_helper"
 
 describe "Timesheet requests" do
-  let(:path)         { "/api/users/#{user.id}/timesheets" }
+  let(:path)         { "/api/timesheets" }
   let(:pay_period)   { create(:pay_period) }
   let(:valid_params) { { timesheet: { pay_period_id: pay_period.id } } }
   let(:user)         { create(:user) }

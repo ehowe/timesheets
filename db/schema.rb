@@ -47,10 +47,11 @@ Sequel.migration do
       primary_key :id, :type=>:Bignum
       column :start_at, "timestamp with time zone", :null=>false
       column :end_at, "timestamp with time zone", :null=>false
-      foreign_key :payroll_schedule_id, :payroll_schedules, :key=>[:id]
+      foreign_key :payroll_schedule_id, :payroll_schedules, :null=>false, :key=>[:id]
       
       index [:end_at]
       index [:start_at]
+      index [:start_at, :end_at, :payroll_schedule_id], :name=>:unique_dates_in_schedule, :unique=>true
     end
     
     create_table(:user_categories) do
@@ -95,5 +96,7 @@ self << "INSERT INTO \"schema_migrations\" (\"filename\") VALUES ('2021080117223
 self << "INSERT INTO \"schema_migrations\" (\"filename\") VALUES ('20210807133543_create_payroll_schedules.rb')"
 self << "INSERT INTO \"schema_migrations\" (\"filename\") VALUES ('20210808194449_modify_payroll_schedules.rb')"
 self << "INSERT INTO \"schema_migrations\" (\"filename\") VALUES ('20210810013341_add_payroll_schedule_id_to_pay_periods.rb')"
+self << "INSERT INTO \"schema_migrations\" (\"filename\") VALUES ('20210810103125_set_payroll_schedule_id_not_null_on_pay_periods.rb')"
+self << "INSERT INTO \"schema_migrations\" (\"filename\") VALUES ('20210810104040_add_uniqueness_constraint_to_pay_periods.rb')"
                 end
               end

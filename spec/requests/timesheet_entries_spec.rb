@@ -6,7 +6,7 @@ describe "Timesheet Entry requests" do
   let(:start_at)     { Time.new(2021, 8, 1, 6, 30, 0, "-04:00").iso8601 }
   let(:end_at)       { Time.new(2021, 8, 1, 18, 30, 0, "-04:00").iso8601 }
   let(:valid_params) { { entry: { timesheet_id: timesheet.id, payroll_category_id: category.id, start_at: start_at, end_at: end_at }, token: user.token } }
-  let(:path)         { "/api/users/#{user.id}/timesheets/#{timesheet.id}/entries" }
+  let(:path)         { "/api/timesheets/#{timesheet.id}/entries" }
   let(:user)         { create(:user) }
 
   context "authenticated" do

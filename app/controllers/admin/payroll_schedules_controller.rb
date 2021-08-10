@@ -1,7 +1,7 @@
 class Admin::PayrollSchedulesController < AdminController
-  skip_before_action :ensure_admin, only: [:index, :show, :date_ranges]
+  skip_before_action :ensure_admin, only: [:index, :show, :pay_periods]
 
-  before_action :get_payroll_schedule, only: [:show, :delete, :date_ranges]
+  before_action :get_payroll_schedule, only: [:show, :delete, :pay_periods]
 
   def index
     operation = PayrollSchedules::List.call
@@ -29,14 +29,14 @@ class Admin::PayrollSchedulesController < AdminController
   def destroy
   end
 
-  def date_ranges
-    operation = PayrollSchedules::GetDateRanges.(payroll_schedule: @payroll_schedule, number: params.permit(:number).fetch(:number, 5))
+  def pay_periods
+    operation = PayrollSchedules::GetPayPeriods.(payroll_schedule: @payroll_schedule, number: params.permit(:number).fetch(:number, 5))
 
     unless operation.success?
       render json: operation.result, status: 422 and return
     end
 
-    render json: { ranges: operation.result }
+    render json: { pay_periods: operation.result }
   end
 
   protected

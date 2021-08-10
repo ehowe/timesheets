@@ -10,7 +10,7 @@ import {
 
 import client from './client'
 import { DispatchLoadingContext } from './LoadingProvider'
-import { DispatchLoginContext, LoginContext } from './login/LoginProvider'
+import { DispatchLoginContext } from './login/LoginProvider'
 
 type EntryT = {
   category: string,
@@ -22,7 +22,6 @@ type EntryT = {
 
 const Sheet: React.FC = () => {
   const { id } = ReactRouterDOM.useParams<{ id: string }>()
-  const { user } = React.useContext(LoginContext)
   const dispatch = React.useContext(DispatchLoginContext)
 
   const setLoading = React.useContext(DispatchLoadingContext)
@@ -32,7 +31,7 @@ const Sheet: React.FC = () => {
   React.useEffect(() => {
     setLoading(true)
 
-    client.request({ path: `/api/users/${user.id}/timesheets/${id}/entries`, method: 'get' })
+    client.request({ path: `/api/timesheets/${id}/entries`, method: 'get' })
       .then(response => {
         setLoading(false)
         setEntries(response.data.entries)

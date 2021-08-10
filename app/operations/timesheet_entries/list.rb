@@ -4,7 +4,7 @@ module TimesheetEntries
 
     # TODO: Pagination probably
     def call(user, timesheet)
-      return [] unless user.timesheets_dataset.select_map(:id).include?(timesheet.id)
+      return [] unless user.timesheets_dataset.select_map(Sequel[:timesheets][:id]).include?(timesheet.id)
 
       # Reload to eager load associations
       timesheet = Timesheet

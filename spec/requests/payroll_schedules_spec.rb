@@ -23,7 +23,11 @@ describe "Payroll schedule requests" do
     end
   end
 
-  shared_examples_for "not creating schedules" do
+  include_examples "listing schedules"
+
+  context "and the user is not an admin" do
+    let(:user) { create(:user) }
+
     it "cannot create a payroll schedule" do
       expect do
         post(path, body: valid_params.merge(token: user.token))
@@ -31,20 +35,17 @@ describe "Payroll schedule requests" do
 
       expect(response.status).to eq(404)
     end
-  end
-
-  include_examples "listing schedules"
-
-  context "and the user is not an admin" do
-    let(:user) { create(:user) }
-
-    include_examples "not creating schedules"
 
     context "with the non-admin path" do
       let(:path) { "/api/payroll_schedules" }
 
       include_examples "listing schedules"
-      include_examples "not creating schedules"
+
+      it "cannot create a payroll schedule" do
+        expect do
+          post(path, body: valid_params.merge(token: user.token))
+        end.to raise_error(ActionController::RoutingError)
+      end
     end
   end
 end

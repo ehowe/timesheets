@@ -81,4 +81,8 @@ RSpec.configure do |config|
   config.around(:each) do |example|
     Sequel::Model.db.transaction(rollback: :always, auto_savepoint: true) { example.run }
   end
+
+  config.before(:each) do |example|
+    allow(Time).to receive(:now).and_return(Time.parse("August 10 2021 10:00 EDT"))
+  end
 end

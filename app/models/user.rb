@@ -9,7 +9,8 @@ class User < Sequel::Model
     left_key: :user_id,
     right_key: :category_id
 
-  one_to_many :timesheets
+  one_to_many :timesheets,
+    dataset: -> { Timesheet.order_by_desc_pay_period_end.where(user_id: id) }
 
   def validate
     super
