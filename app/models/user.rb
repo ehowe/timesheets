@@ -7,7 +7,7 @@ class User < Sequel::Model
 
   plugin :devise
 
-  devise :database_authenticatable, :recoverable, :registerable, :lockable
+  devise :database_authenticatable, :recoverable, :registerable
 
   many_to_many :payroll_categories,
     class: "PayrollCategory",
@@ -19,7 +19,7 @@ class User < Sequel::Model
     dataset: -> { Timesheet.order_by_desc_pay_period_end.where(user_id: id) }
 
   def active_for_authentication?
-    super && !locked
+    super && locked_at.nil?
   end
 
   def validate

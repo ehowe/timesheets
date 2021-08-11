@@ -7,7 +7,7 @@ class UserPresenter < BasePresenter
       full_name:  "#{object.first_name} #{object.last_name}",
       id:         object.id,
       last_name:  object.last_name,
-      locked:     object.locked,
+      locked:     !!object.locked_at,
     }
   end
 end

@@ -38,7 +38,7 @@ Sequel.migration do
       column :last_sign_in_ip, "inet"
       column :token, "text"
       column :admin, "boolean", :default=>false, :null=>false
-      column :locked, "boolean", :default=>false, :null=>false
+      column :locked_at, "timestamp with time zone"
       
       index [:email], :unique=>true
       index [:reset_password_token], :unique=>true

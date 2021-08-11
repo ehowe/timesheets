@@ -15,4 +15,13 @@ describe "Signing in", type: :request do
 
     expect(response.status).to eq(401)
   end
+
+  it "fails to sign in if the user is locked" do
+    user.update(locked_at: Time.now)
+
+    post("/api/users/sign_in", body: { user: { email: user.email, password: "pass" } })
+
+    expect(response.status).to eq(401)
+    expect(response.body).to match("error" => "Your account is not activated yet.")
+  end
 end

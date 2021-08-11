@@ -10,5 +10,9 @@ FactoryBot.define do
     trait :admin do
       admin { true }
     end
+
+    trait :locked do
+      locked_at { Time.now }
+    end
   end
 end

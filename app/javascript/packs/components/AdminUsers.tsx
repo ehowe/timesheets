@@ -5,15 +5,19 @@ import { UserT } from '../model.types'
 
 import {
   Button,
+  OverlayTrigger,
   Row,
   Table,
+  Tooltip,
 } from 'react-bootstrap'
 
 import client from './client'
 import { DispatchLoadingContext } from './LoadingProvider'
+import { LoginContext } from './login/LoginProvider'
 import Modal from './Modal'
 
 const AdminUsers: React.FC = () => {
+  const { user: admin } = React.useContext(LoginContext)
   const setLoading = React.useContext(DispatchLoadingContext)
   const [users, setUsers] = React.useState([])
 
@@ -33,6 +37,8 @@ const AdminUsers: React.FC = () => {
 
   const handleLockChange = (user: UserT) => {
   }
+
+  const ConditionalWrapper = ({ condition, wrapper, children }) => (condition ? wrapper(children) : children)
 
   return (
     <Row className="m-3">
@@ -59,12 +65,20 @@ const AdminUsers: React.FC = () => {
                 <td className="text-capitalize">{user.admin.toString()}</td>
                 <td className="text-capitalize">{user.locked.toString()}</td>
                 <td>
-                  <Button variant="outline-secondary" size="sm" onClick={() => handleLockChange(user)}>
-                    { user.locked
-                      ? <LockFill />
-                      : <UnlockFill />
-                    }
-                  </Button>
+                  <ConditionalWrapper condition={user.id === admin.id} wrapper={children => (
+                    <OverlayTrigger placement="right" overlay={<Tooltip id={`user-${user.id}`}>Can't disable the active user.</Tooltip>}>
+                      {children}
+                    </OverlayTrigger>
+                  )}>
+                    <div>
+                      <Button variant="outline-secondary" size="sm" onClick={() => handleLockChange(user)} disabled={user.id === admin.id}>
+                        { user.locked
+                          ? <LockFill />
+                          : <UnlockFill />
+                        }
+                      </Button>
+                    </div>
+                  </ConditionalWrapper>
                 </td>
               </tr>
             ))

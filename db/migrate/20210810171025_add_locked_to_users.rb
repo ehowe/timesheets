@@ -3,7 +3,7 @@
 Sequel.migration do
   change do
     alter_table :users do
-      add_column :locked, :boolean, null: false, default: false
+      add_column :locked_at, :timestamptz
     end
   end
 end
