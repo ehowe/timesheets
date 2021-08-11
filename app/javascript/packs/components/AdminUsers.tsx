@@ -66,7 +66,7 @@ const AdminUsers: React.FC = () => {
                 <td className="text-capitalize">{user.locked.toString()}</td>
                 <td>
                   <ConditionalWrapper condition={user.id === admin.id} wrapper={children => (
-                    <OverlayTrigger placement="right" overlay={<Tooltip id={`user-${user.id}`}>Can't disable the active user.</Tooltip>}>
+                    <OverlayTrigger placement="bottom" overlay={<Tooltip id={`user-${user.id}`}>Can't disable the active user.</Tooltip>}>
                       {children}
                     </OverlayTrigger>
                   )}>
