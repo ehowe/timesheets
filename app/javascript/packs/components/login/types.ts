@@ -8,6 +8,7 @@ export type FormUserT = {
   email?: string,
   password?: string,
   password_confirmation?: string,
+  reset_password_token?: string,
   token?: string,
 }
 

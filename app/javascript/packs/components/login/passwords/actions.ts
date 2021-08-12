@@ -13,7 +13,7 @@ const changePassword = ({ user, dispatch }: FormActionT): void => {
 
   dispatch(request({ email }))
 
-  client.request({ path: '/api/users/password', method: 'patch', data: user })
+  client.request({ path: '/api/users/password', method: 'patch', data: { user } })
     .then(
       user => {
         dispatch(success({ user }))

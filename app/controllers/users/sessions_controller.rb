@@ -18,9 +18,6 @@ class Users::SessionsController < Devise::SessionsController
     end
   end
 
-  def index
-  end
-
   protected
 
   def set_cookie(user)
