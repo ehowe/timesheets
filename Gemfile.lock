@@ -60,6 +60,8 @@ GEM
       minitest (>= 5.1)
       tzinfo (~> 2.0)
       zeitwerk (~> 2.3)
+    addressable (2.8.0)
+      public_suffix (>= 2.0.2, < 5.0)
     ast (2.4.2)
     awesome_print (1.9.2)
     backport (1.2.0)
@@ -77,6 +79,10 @@ GEM
       responders
       warden (~> 1.2.3)
     diff-lcs (1.4.4)
+    dotenv (2.7.6)
+    dotenv-rails (2.7.6)
+      dotenv (= 2.7.6)
+      railties (>= 3.2)
     e2mmap (0.1.0)
     erubi (1.10.0)
     factory_bot (6.2.0)
@@ -150,6 +156,7 @@ GEM
     pry-byebug (3.9.0)
       byebug (~> 11.0)
       pry (~> 0.13.0)
+    public_suffix (4.0.6)
     puma (5.4.0)
       nio4r (~> 2.0)
     racc (1.5.2)
@@ -285,9 +292,11 @@ PLATFORMS
   x86_64-linux
 
 DEPENDENCIES
+  addressable (~> 2.8.0)
   awesome_print
   byebug
   devise (~> 4.8.0)
+  dotenv-rails (~> 2.7.6)
   factory_bot_rails
   faraday
   faraday_middleware

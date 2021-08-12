@@ -3,6 +3,7 @@ git_source(:github) { |repo| "https://github.com/#{repo}.git" }
 
 ruby "3.0.2"
 
+gem "addressable",   "~> 2.8.0"
 gem "devise",        "~> 4.8.0"
 gem "jwt",           "~> 2.2.3"
 gem "oj",            "~> 3.12.2"
@@ -17,6 +18,7 @@ gem "webpacker",     "~> 5.4.0"
 group :development, :test do
   gem "awesome_print"
   gem "byebug", platforms: [:mri, :mingw, :x64_mingw]
+  gem "dotenv-rails", "~> 2.7.6"
   gem "faraday"
   gem "faraday_middleware"
   gem "factory_bot_rails"

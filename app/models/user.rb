@@ -35,4 +35,18 @@ class User < Sequel::Model
   def revoke_admin!
     update(admin: false)
   end
+
+  def password_edit_url
+    raise ArgumentError.new("No password reset token found") unless reset_password_token
+
+    host     = Rails.application.routes.default_url_options[:host]
+    protocol = Rails.application.routes.default_url_options[:protocol]
+
+    raise ArgumentError.new("No host or protocol found") unless host && protocol
+
+    uri              = Addressable::URI.parse("#{protocol}://#{host}/users/#{id}/password/edit")
+    uri.query_values = {"token" => reset_password_token}
+
+    uri.to_s
+  end
 end
