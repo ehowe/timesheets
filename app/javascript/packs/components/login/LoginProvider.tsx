@@ -100,7 +100,7 @@ export const LoginProvider: React.FC<LoginProviderPropsT> = (props: LoginProvide
           case loginConstants.PASSWORD_RESET_REQUEST:
             return { ...state, resetting: true }
           case loginConstants.PASSWORD_RESET_SUCCESS:
-            return { ...state, resetting: false }
+            return { ...INIT_STATE, resetting: false, loggedIn: false, user: {} }
           case loginConstants.PASSWORD_RESET_FAILURE:
             return { ...state, errors: [payload] }
         }

@@ -5,6 +5,7 @@ import { UserT } from '../model.types'
 
 import {
   Button,
+  Form,
   OverlayTrigger,
   Row,
   Table,
@@ -20,6 +21,19 @@ const AdminUsers: React.FC = () => {
   const { user: admin } = React.useContext(LoginContext)
   const setLoading = React.useContext(DispatchLoadingContext)
   const [users, setUsers] = React.useState([])
+  const [open, setOpen] = React.useState(false)
+  const [formError, setFormError] = React.useState(false)
+  const [loadUsers, setLoadUsers] = React.useState(true)
+
+  const INIT_STATE = {
+    email: '',
+    first_name: '',
+    last_name: '',
+    admin: false,
+  }
+
+  const reducer = (state, update) => ({ ...state, ...update })
+  const [state, dispatch] = React.useReducer(reducer, INIT_STATE)
 
   React.useEffect(() => {
     setLoading(true)
@@ -50,6 +64,26 @@ const AdminUsers: React.FC = () => {
       .catch(error => {
         setLoading(false)
         console.log(error)
+      })
+  }
+
+  const handleUserChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    dispatch({ [e.target.name]: e.target.value })
+  }
+
+  const handleUserSubmit = () => {
+    setLoading(true)
+
+    client.request({ path: '/api/admin/users', method: 'post', data: { user: state } })
+      .then(response => {
+        setLoading(false)
+        setUsers([ ...users, response.data.user ])
+        setOpen(false)
+      })
+      .catch(error => {
+        console.log(error)
+        setFormError(true)
+        setLoading(false)
       })
   }
 
@@ -100,6 +134,30 @@ const AdminUsers: React.FC = () => {
           }
         </tbody>
       </Table>
+      <Button variant="primary" onClick={() => setOpen(true)}>Add user</Button>
+      <Modal title="Add User" handleClose={() => setOpen(false)} show={open}>
+        <Form>
+          { formError && <p className="text-danger">There was an error completing this request. Please try again</p> }
+          <Form.Group>
+            <Form.Label>Email</Form.Label>
+            <Form.Control type="text" name="email" onChange={handleUserChange} value={state.email}/>
+          </Form.Group>
+          <Form.Group>
+            <Form.Label>First Name</Form.Label>
+            <Form.Control type="text" name="first_name" onChange={handleUserChange} value={state.first_name} />
+          </Form.Group>
+          <Form.Group>
+            <Form.Label>Last Name</Form.Label>
+            <Form.Control type="text" name="last_name" onChange={handleUserChange} value={state.last_name} />
+          </Form.Group>
+          <Form.Group className="mt-3">
+            <Form.Check type="checkbox" label="Admin" name="admin" onChange={handleUserChange} />
+          </Form.Group>
+          <Form.Group className="mt-3">
+            <Button onClick={handleUserSubmit}>Submit</Button>
+          </Form.Group>
+        </Form>
+      </Modal>
     </Row>
   )
 }

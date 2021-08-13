@@ -1,5 +1,12 @@
 class Admin::UsersController < AdminController
   def create
+    operation = Users::Create.(admin_user: current_user, params: params.require(:user).permit!.to_h)
+
+    unless operation.success?
+      render json: { error: operation.result }, status: 422 and return
+    end
+
+    render json: { user: operation.result }
   end
 
   def index

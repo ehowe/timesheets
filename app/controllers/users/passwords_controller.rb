@@ -3,6 +3,9 @@ class Users::PasswordsController < Devise::PasswordsController
 
   def update
     super do
+      cookies.delete(:jwt)
+      cookies.delete(:user)
+
       respond_with UserPresenter.display(resource), location: "/" and return
     end
   end
