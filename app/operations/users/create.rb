@@ -9,16 +9,20 @@ module Users
 
       User.db.transaction do
         begin
-          u     = User.create(params.merge(password: random_password, password_confirmation: random_password))
-          token = u.send(:set_reset_password_token)
+          user  = User.create(params.merge(password: random_password, password_confirmation: random_password))
+          token = user.send(:set_reset_password_token)
 
-          UserSignupMailer.with(user: u, token: token).reset_password_instructions.deliver_now
+          send_mail(user: user, token: token)
 
-          return Result.new(:ok, UserPresenter.display(u))
+          return Result.new(:ok, UserPresenter.display(user))
         rescue
           return Result.new(:error, "Unknown error")
         end
       end
+    end
+
+    def send_mail(user:, token:)
+      UserSignupMailer.with(user: user, token: token).reset_password_instructions.deliver_now
     end
   end
 end
