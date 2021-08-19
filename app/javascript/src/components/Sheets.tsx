@@ -61,17 +61,16 @@ const Sheets: React.FC = () => {
 
     client.request({ path: `/api/timesheets`, method: 'get' })
       .then(response => {
-        setLoading(false)
         setSheets(response.data.sheets)
       })
       .catch(error => {
         if (error.response && error.response.status === 401) {
           dispatch({ type: 'logout' })
           dispatch({ type: 'alert', use: 'ALERT_ERROR', payload: 'Session expired' })
-          setLoading(false)
           setRedirectToLogin(true)
         }
       })
+      .finally(() => setLoading(false))
 
     client.request({ path: '/api/payroll_schedules', method: 'get' })
       .then(response => {
@@ -93,14 +92,13 @@ const Sheets: React.FC = () => {
     client.request({ path: '/api/timesheets', method: 'post', data: { timesheet: { pay_period_id: newTimesheet.pay_period_id } } })
       .then(response => {
         setRedirectSheet(response.data.id)
-        setLoading(false)
         setOpen(false)
         setRedirectToSheet(true)
       })
       .catch(error => {
         console.log(error)
-        setLoading(false)
       })
+      .finally(() => setLoading(false))
   }
 
   return (

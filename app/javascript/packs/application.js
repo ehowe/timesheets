@@ -14,3 +14,17 @@
 //
 // const images = require.context('../images', true)
 // const imagePath = (name) => images(name, true)
+
+import * as React from 'react'
+import * as ReactDOM from 'react-dom'
+import App from '../src/app'
+import { LoginProvider } from '../src/components/login/LoginProvider'
+
+document.addEventListener('DOMContentLoaded', () => {
+  ReactDOM.render(
+    <LoginProvider userCookieName="user">
+      <App/>
+    </LoginProvider>,
+    document.body.appendChild(document.createElement('div')),
+  )
+})

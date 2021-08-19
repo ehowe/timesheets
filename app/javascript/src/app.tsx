@@ -1,5 +1,4 @@
 import * as React from 'react' // we need this to make JSX compile
-import * as ReactDOM from 'react-dom'
 import * as Router from 'react-router-dom'
 
 import {
@@ -19,14 +18,14 @@ import Sheets from './components/Sheets'
 import LoadingModal from './components/LoadingModal'
 import LoginRouter from './components/login/Router'
 import { LoadingProvider } from './components/LoadingProvider'
-import { LoginProvider, LoginContext, DispatchLoginContext } from './components/login/LoginProvider'
+import { LoginContext, DispatchLoginContext } from './components/login/LoginProvider'
 
 import FlashMessages from './components/login/alerts/FlashMessages'
 import DeviseSessionsNew from './components/login/login/sessions/DeviseSessionsNew'
 import sessionActions from './components/login/login/sessions/actions'
 import DeviseRegistrationsNew from './components/login/login/registrations/DeviseRegistrationsNew'
 
-export const App: React.FC = () => {
+const App: React.FC = () => {
   const { loggedIn, user } = React.useContext(LoginContext)
   const dispatchLogin = React.useContext(DispatchLoginContext)
 
@@ -119,11 +118,4 @@ export const App: React.FC = () => {
   )
 }
 
-document.addEventListener('DOMContentLoaded', () => {
-  ReactDOM.render(
-    <LoginProvider userCookieName="user">
-      <App/>
-    </LoginProvider>,
-    document.body.appendChild(document.createElement('div')),
-  )
-})
+export default App

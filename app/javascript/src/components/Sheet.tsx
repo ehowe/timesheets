@@ -4,7 +4,7 @@ import { Redirect } from 'react-router-dom'
 import { capitalize } from 'lodash'
 
 import {
-  Container,
+  Row,
   Table,
 } from 'react-bootstrap'
 
@@ -33,21 +33,20 @@ const Sheet: React.FC = () => {
 
     client.request({ path: `/api/timesheets/${id}/entries`, method: 'get' })
       .then(response => {
-        setLoading(false)
         setEntries(response.data.entries)
       })
       .catch(error => {
         if (error.response && error.response.status === 401) {
           dispatch({ type: 'logout' })
           dispatch({ type: 'alert', use: 'ALERT_ERROR', payload: 'Session expired' })
-          setLoading(false)
           setRedirect(true)
         }
       })
+      .finally(() => setLoading(false))
   }, [])
 
   return (
-    <Container>
+    <Row>
       { redirect && <Redirect to="/users/sign_in" /> }
       <Table borderless hover responsive striped>
         <caption>Hours Logged</caption>
@@ -72,7 +71,7 @@ const Sheet: React.FC = () => {
           ))}
         </tbody>
       </Table>
-    </Container>
+    </Row>
   )
 }
 

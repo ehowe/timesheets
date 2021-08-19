@@ -49,14 +49,13 @@ const AdminPayroll: React.FC = () => {
     client.request({ path: '/api/admin/payroll_schedules', method: 'post', data: { payroll_schedule: state } })
       .then(response => {
         setOpen(false)
-        setLoading(false)
         setSchedules([...schedules, response.data.schedule])
       })
       .catch(error => {
         console.log(error)
         setFormError(true)
-        setLoading(false)
       })
+      .finally(() => setLoading(false))
   }
 
   React.useEffect(() => {

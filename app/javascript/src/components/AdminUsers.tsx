@@ -40,13 +40,12 @@ const AdminUsers: React.FC = () => {
 
     client.request({ path: '/api/admin/users', method: 'get' })
       .then(response => {
-        setLoading(false)
         setUsers(response.data.users)
       })
       .catch(error => {
         console.log(error)
-        setLoading(false)
       })
+      .finally(() => setLoading(false))
   }, [])
 
   const handleLockChange = (user: UserT) => {
@@ -59,12 +58,11 @@ const AdminUsers: React.FC = () => {
         const updatedUsers = [...users]
         updatedUsers[userIndex] = user
         setUsers(updatedUsers)
-        setLoading(false)
       })
       .catch(error => {
-        setLoading(false)
         console.log(error)
       })
+      .finally(() => setLoading(false))
   }
 
   const handleUserChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -76,15 +74,14 @@ const AdminUsers: React.FC = () => {
 
     client.request({ path: '/api/admin/users', method: 'post', data: { user: state } })
       .then(response => {
-        setLoading(false)
         setUsers([ ...users, response.data.user ])
         setOpen(false)
       })
       .catch(error => {
         console.log(error)
         setFormError(true)
-        setLoading(false)
       })
+      .finally(() => setLoading(false))
   }
 
   const ConditionalWrapper = ({ condition, wrapper, children }) => (condition ? wrapper(children) : children)
