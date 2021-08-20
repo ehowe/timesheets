@@ -6,7 +6,7 @@ class EntriesController < AuthenticatedApiController
 
     render json: operation.error, status: 422 and return unless operation.success?
 
-    render json: operation.result, status: :created
+    render json: { entry: operation.result }, status: :created
   end
 
   def destroy

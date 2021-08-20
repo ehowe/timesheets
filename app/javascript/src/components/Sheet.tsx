@@ -4,6 +4,8 @@ import { Redirect } from 'react-router-dom'
 import { capitalize } from 'lodash'
 
 import {
+  Button,
+  Form,
   Row,
   Table,
 } from 'react-bootstrap'
@@ -11,6 +13,7 @@ import {
 import client from './client'
 import { DispatchLoadingContext } from './LoadingProvider'
 import { DispatchLoginContext } from './login/LoginProvider'
+import Modal from './Modal'
 
 type EntryT = {
   category: string,
@@ -27,6 +30,16 @@ const Sheet: React.FC = () => {
   const setLoading = React.useContext(DispatchLoadingContext)
   const [entries, setEntries] = React.useState<Array<EntryT>>([])
   const [redirect, setRedirect] = React.useState(false)
+  const [open, setOpen] = React.useState(false)
+
+  const NEW_ENTRY = {
+    end_at: '',
+    payroll_category_id: '',
+    start_at: '',
+  }
+
+  const reducer = (state, update) => ({...state, ...update})
+  const [newEntry, dispatchEntry] = React.useReducer(reducer, NEW_ENTRY)
 
   React.useEffect(() => {
     setLoading(true)
@@ -44,6 +57,28 @@ const Sheet: React.FC = () => {
       })
       .finally(() => setLoading(false))
   }, [])
+
+  const handleChange = (e: any): void => {
+    dispatchEntry({ [e.target.name]: e.target.value })
+  }
+
+  const handlePayrollCategoryChange = (e: any): void => {
+    dispatchEntry({ payroll_category_id: e.value })
+  }
+
+  const handleSubmit = (): void => {
+    setLoading(true)
+
+    client.request({ path: `/api/timesheets/${id}/entries`, method: 'post', data: { entry: { newEntry } } })
+      .then(response => {
+        setEntries([ response.data.entry, ...entries ])
+        setOpen(false)
+      })
+      .catch(error => {
+        console.log(error)
+      })
+      .finally(() => setLoading(false))
+  }
 
   return (
     <Row>
@@ -71,6 +106,16 @@ const Sheet: React.FC = () => {
           ))}
         </tbody>
       </Table>
+      <Modal title="Add Entry" handleClose={() => setOpen(false)} show={open}>
+        <Form>
+          <Form.Group>
+            <Form.Label>Payroll Category</Form.Label>
+            <Form.Select onChange={handleChange} name="payroll_category_id" value={newEntry.payroll_schedule_id}>
+              <option>Select a payroll schedule</option>
+            </Form.Select>
+          </Form.Group>
+        </Form>
+      </Modal>
     </Row>
   )
 }

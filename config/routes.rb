@@ -15,6 +15,7 @@ Rails.application.routes.draw do
     end
 
     namespace :admin do
+      resources :payroll_categories
       resources :payroll_schedules
       resources :users do
         member do
