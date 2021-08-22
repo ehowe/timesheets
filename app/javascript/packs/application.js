@@ -20,6 +20,8 @@ import * as ReactDOM from 'react-dom'
 import App from '../src/app'
 import { LoginProvider } from '../src/components/login/LoginProvider'
 
+import 'css/app'
+
 document.addEventListener('DOMContentLoaded', () => {
   ReactDOM.render(
     <LoginProvider userCookieName="user">

@@ -1,5 +1,8 @@
 import * as React from 'react'
+import * as dateFns from 'date-fns'
 import TimezoneSelect from 'react-timezone-select'
+import DatePicker from 'react-date-picker'
+import TimePicker from 'react-time-picker'
 import { sortBy } from 'lodash'
 
 import {
@@ -15,8 +18,7 @@ import Modal from './Modal'
 
 type ScheduleStateT = {
   length_in_days?: number,
-  start_date?: string,
-  start_time?: string,
+  start_at?: Date,
   timezone?: string,
 }
 
@@ -35,8 +37,6 @@ const AdminPayroll: React.FC = () => {
 
   const INIT_SCHEDULE_STATE: ScheduleStateT = {
     length_in_days: 7,
-    start_date: '',
-    start_time: '',
     timezone: '',
   }
 
@@ -50,8 +50,28 @@ const AdminPayroll: React.FC = () => {
   const categoryReducer = (state: CategoryStateT, update: CategoryStateT) => ({...state, ...update})
   const [categoryState, dispatchCategory] = React.useReducer(categoryReducer, INIT_CATEGORY_STATE)
 
-  const handleScheduleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    scheduleDispatch({ [e.target.name]: e.target.value })
+  const handleDateChange = ({ key, date }: { key: 'start_at' | 'end_at', date: Date }): void => {
+    const currentDate = scheduleState[key] || new Date()
+    const newDate = date || new Date()
+    const updatedDate = new Date(currentDate.getTime())
+
+    updatedDate.setMonth(newDate.getMonth())
+    updatedDate.setFullYear(newDate.getFullYear())
+    updatedDate.setDate(newDate.getDate())
+
+    scheduleDispatch({ [key]: updatedDate })
+  }
+
+  const handleTimeChange = ({ key, time }: { key: 'start_at' | 'end_at', time: string }): void => {
+    if (time === null) return
+
+    const [hours, minutes] = time.split(":").map(n => parseInt(n))
+    const date = scheduleState[key] || new Date()
+
+    date.setHours(hours)
+    date.setMinutes(minutes)
+
+    scheduleDispatch({ [key]: date })
   }
 
   const handleCategoryChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -65,7 +85,14 @@ const AdminPayroll: React.FC = () => {
   const scheduleSubmit = () => {
     setLoading(true)
 
-    client.request({ path: '/api/admin/payroll_schedules', method: 'post', data: { payroll_schedule: scheduleState } })
+    const payroll_schedule = {
+      length_in_days: scheduleState.length_in_days,
+      start_date: dateFns.format(scheduleState.start_at, 'yyyy-MM-dd'),
+      start_time: dateFns.format(scheduleState.start_at, 'HH:mm'),
+      timezone: scheduleState.timezone,
+    }
+
+    client.request({ path: '/api/admin/payroll_schedules', method: 'post', data: { payroll_schedule } })
       .then(response => {
         setAddScheduleOpen(false)
         setSchedules([...schedules, response.data.schedule])
@@ -102,6 +129,14 @@ const AdminPayroll: React.FC = () => {
         setCategories(response.data.payroll_categories)
       })
   }, [])
+
+  const submitDisabled = (): boolean => {
+    if (Object.keys(scheduleState).length === 0) return true
+
+    if (Object.values(scheduleState).some(value => value === undefined)) return true
+
+    return Object.values(scheduleState).filter(value => typeof value === 'string').some((value: any) => value.length === 0)
+  }
 
   return (
     <Row className="m-3">
@@ -150,21 +185,21 @@ const AdminPayroll: React.FC = () => {
           }
         </tbody>
       </Table>
-      <Button variant="primary" onClick={() => setAddCategoryOpen(true)}>Create new payroll category</Button>
+      <Button variant="primary" onClick={() => setAddCategoryOpen(true)} disabled={submitDisabled()}>Create new payroll category</Button>
       <Modal title="Create Schedule" handleClose={() => setAddScheduleOpen(false)} show={addScheduleOpen}>
         <Form>
           { scheduleFormError.length > 0 && <p className="text-danger">There was an error completing this request: {scheduleFormError}</p> }
           <Form.Group>
             <Form.Label>Start Date</Form.Label>
-            <Form.Control type="date" name="start_date" onChange={handleScheduleChange} value={scheduleState.start_date}/>
+            <DatePicker onChange={(date: Date) => handleDateChange({ key: 'start_at', date })} value={scheduleState.start_at} className="form-control"/>
           </Form.Group>
           <Form.Group>
             <Form.Label>Start Time</Form.Label>
-            <Form.Control type="time" name="start_time" onChange={handleScheduleChange} value={scheduleState.start_time} />
+            <TimePicker onChange={(time: string) => handleTimeChange({ key: 'start_at', time })} value={scheduleState.start_at && dateFns.format(scheduleState.start_at, 'HH:mm')} className="form-control"/>
           </Form.Group>
           <Form.Group>
             <Form.Label>Length in days</Form.Label>
-            <Form.Control type="number" name="length_in_days" onChange={handleScheduleChange} value={scheduleState.length_in_days} />
+            <Form.Control type="number" name="length_in_days" onChange={(e: React.ChangeEvent<HTMLInputElement>) => scheduleDispatch({ length_in_days: parseInt(e.target.value) })} value={scheduleState.length_in_days} />
           </Form.Group>
           <Form.Group>
             <Form.Label>Timezone</Form.Label>

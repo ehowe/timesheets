@@ -9,9 +9,6 @@ import {
   Row,
 } from 'react-bootstrap'
 
-import 'bootstrap/dist/css/bootstrap.css'
-import './app.css'
-
 import Admin from './components/Admin'
 import Sheet from './components/Sheet'
 import Sheets from './components/Sheets'

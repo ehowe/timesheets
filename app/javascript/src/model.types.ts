@@ -23,3 +23,16 @@ export type PayPeriodT = {
   id: number,
   start_at: string,
 }
+
+export type EntryT = {
+  category: string,
+  end_at: string,
+  id: number,
+  start_at: string,
+  length: string,
+}
+
+export type PayrollCategoryT = {
+  id: number,
+  name: string,
+}

@@ -1,3 +1,5 @@
+@import "~bootstrap/scss/bootstrap.scss";
+
 .navbar {
   padding-left: 1em;
   padding-right: 1em;
@@ -30,4 +32,8 @@
   background: none !important;
   border: none !important;
   align-items: center;
+}
+
+.react-date-picker__wrapper, .react-time-picker__wrapper  {
+  border: none !important;
 }
