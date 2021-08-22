@@ -1,7 +1,7 @@
 import { login } from '../common/loginUtils'
 import { createTimesheet } from '../common/timesheetUtils'
 
-describe('Timesheets list', () => {
+describe('Timesheets', () => {
   beforeEach(() => {
     login()
     cy.visit('/')

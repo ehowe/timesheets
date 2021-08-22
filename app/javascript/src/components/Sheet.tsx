@@ -94,7 +94,7 @@ const Sheet: React.FC = () => {
   const handleSubmit = (): void => {
     setLoading(true)
 
-    client.request({ path: `/api/timesheets/${id}/entries`, method: 'post', data: { entry: { newEntry } } })
+    client.request({ path: `/api/timesheets/${id}/entries`, method: 'post', data: { entry: newEntry } })
       .then(response => {
         setEntries([ response.data.entry, ...entries ])
         setOpen(false)
@@ -113,29 +113,27 @@ const Sheet: React.FC = () => {
     return Object.values(newEntry).filter(value => typeof value === 'string').some((value: any) => value.length === 0)
   }
 
-  // const dateToTimeString = (isoString: string): string => {
-  //   if (isoString.length === 0) {
-  //     return ""
-  //   }
-
-  //   return dateFns.format(dateFns.parseISO(isoString), 'yyyy-MM-dd HH:mm')
-  // }
-
   return (
     <Row>
       { redirect && <Redirect to="/users/sign_in" /> }
       <Table borderless hover responsive striped>
         <caption>Hours Logged</caption>
-        { entries.length > 0 && (
-          <thead>
-            <tr>
-              <th>Start</th>
-              <th>End</th>
-              <th>Category</th>
-              <th>Length</th>
-            </tr>
-          </thead>
-        )}
+        <thead>
+          <tr>
+            { entries.length > 0
+              ? (
+                <React.Fragment>
+                  <th>Start</th>
+                  <th>End</th>
+                  <th>Category</th>
+                  <th>Length</th>
+                </React.Fragment>
+              ) : (
+                <th colSpan={4} className="timesheetHeader">No Entries in this Timesheet</th>
+              )
+            }
+          </tr>
+        </thead>
         <tbody>
           { entries.map(entry => (
             <tr key={entry.id}>
@@ -152,19 +150,19 @@ const Sheet: React.FC = () => {
         <Form>
           <Form.Group>
             <Form.Label>Start Date</Form.Label>
-            <DatePicker onChange={(date: Date) => handleDateChange({ key: 'start_at', date })} value={newEntry.start_at} className="form-control"/>
+            <DatePicker onChange={(date: Date) => handleDateChange({ key: 'start_at', date })} value={newEntry.start_at} className="form-control start-date" name="start_date"/>
           </Form.Group>
           <Form.Group>
             <Form.Label>Start Time</Form.Label>
-            <TimePicker onChange={(time: string) => handleTimeChange({ key: 'start_at', time })} value={newEntry.start_at && dateFns.format(newEntry.start_at, 'HH:mm')} className="form-control"/>
+            <TimePicker onChange={(time: string) => handleTimeChange({ key: 'start_at', time })} value={newEntry.start_at && dateFns.format(newEntry.start_at, 'HH:mm')} className="form-control start-time" name="start_time"/>
           </Form.Group>
           <Form.Group className="mt-1">
             <Form.Label>End Date</Form.Label>
-            <DatePicker onChange={(date: Date) => handleDateChange({ key: 'end_at', date })} value={newEntry.end_at} className="form-control"/>
+            <DatePicker onChange={(date: Date) => handleDateChange({ key: 'end_at', date })} value={newEntry.end_at} className="form-control end-date" name="end_date"/>
           </Form.Group>
           <Form.Group>
             <Form.Label>End Time</Form.Label>
-            <TimePicker onChange={(time: string) => handleTimeChange({ key: 'end_at', time })} value={newEntry.start_at && dateFns.format(newEntry.start_at, 'HH:mm')} className="form-control"/>
+            <TimePicker onChange={(time: string) => handleTimeChange({ key: 'end_at', time })} value={newEntry.start_at && dateFns.format(newEntry.start_at, 'HH:mm')} className="form-control end-time" name="end_time"/>
           </Form.Group>
           <Form.Group className="mt-1">
             <Form.Label>Payroll Category</Form.Label>
