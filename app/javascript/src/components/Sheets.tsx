@@ -1,6 +1,7 @@
 import * as React from 'react'
 import { Redirect, useLocation } from 'react-router-dom'
 import Select from 'react-select'
+import { uniq } from 'lodash'
 
 import { PayPeriodT, ScheduleT } from '../model.types'
 
@@ -24,10 +25,9 @@ const Sheets: React.FC = () => {
   const [sheets, setSheets] = React.useState([])
   const [payrollSchedules, setPayrollSchedules] = React.useState([])
   const [redirectToLogin, setRedirectToLogin] = React.useState(false)
-  const [redirectToSheet, setRedirectToSheet] = React.useState(false)
   const [open, setOpen] = React.useState(false)
   const [dateRanges, setDateRanges] = React.useState([])
-  const [redirectSheet, setRedirectSheet] = React.useState(null)
+  const [payrollScheduleOptions, setPayrollScheduleOptions] = React.useState<Array<{ label: string, value: number }>>([])
 
   const NEW_TIMESHEET = {
     pay_period_id: '',
@@ -48,8 +48,17 @@ const Sheets: React.FC = () => {
       })
   }, [newTimesheet.payroll_schedule_id])
 
-  const handleChange = (e: any): void => {
-    dispatchTimesheet({ [e.target.name]: e.target.value })
+  React.useEffect(() => {
+    if (payrollSchedules.length > 0) {
+      dispatchTimesheet({ payroll_schedule_id: payrollSchedules[0].id })
+
+      setPayrollScheduleOptions(payrollSchedules.map(schedule => ({ label: scheduleName(schedule), value: schedule.id }) ))
+    }
+
+  }, [payrollSchedules])
+
+  const handlePayrollScheduleChange = (e: any): void => {
+    dispatchTimesheet({ payroll_schedule_id: e.value })
   }
 
   const handlePayPeriodChange = (e: any): void => {
@@ -74,10 +83,6 @@ const Sheets: React.FC = () => {
 
     client.request({ path: '/api/payroll_schedules', method: 'get' })
       .then(response => {
-        if (response.data.payroll_schedules.length > 0) {
-          dispatchTimesheet({ payroll_schedule_id: response.data.payroll_schedules[0].id })
-        }
-
         setPayrollSchedules(response.data.payroll_schedules)
       })
   }, [])
@@ -91,9 +96,9 @@ const Sheets: React.FC = () => {
 
     client.request({ path: '/api/timesheets', method: 'post', data: { timesheet: { pay_period_id: newTimesheet.pay_period_id } } })
       .then(response => {
-        setRedirectSheet(response.data.id)
         setOpen(false)
-        setRedirectToSheet(true)
+        const newSheets = [...sheets, response.data.sheet]
+        setSheets(uniq(newSheets))
       })
       .catch(error => {
         console.log(error)
@@ -104,8 +109,7 @@ const Sheets: React.FC = () => {
   return (
     <Row>
       { redirectToLogin && <Redirect to="/users/sign_in" /> }
-      { redirectToSheet && <Redirect to={{ pathname: `/sheets/${redirectSheet}`, state: { referrer: useLocation() } }} /> }
-      <Table borderless hover responsive striped>
+      <Table borderless hover responsive striped className="timesheets">
         <thead>
           <tr>
             <th className="timesheetHeader">{headerText}</th>
@@ -113,8 +117,8 @@ const Sheets: React.FC = () => {
         </thead>
         <tbody>
           { sheets.map(sheet => (
-            <tr key={sheet.id}>
-              <td>
+            <tr key={sheet.id} className="sheet-row">
+              <td className="sheet-name">
                 <Nav.Link href={`/timesheets/${sheet.id}`}>{sheet.name}</Nav.Link>
               </td>
             </tr>
@@ -126,16 +130,11 @@ const Sheets: React.FC = () => {
         <Form>
           <Form.Group>
             <Form.Label>Payroll Schedule</Form.Label>
-            <Form.Select onChange={handleChange} name="payroll_schedule_id" value={newTimesheet.payroll_schedule_id}>
-              <option>Select a payroll schedule</option>
-              { payrollSchedules.map((schedule: ScheduleT) => (
-                <option key={schedule.id} value={schedule.id}>{scheduleName(schedule)}</option>
-              ))}
-            </Form.Select>
+            <Select onChange={handlePayrollScheduleChange} value={payrollScheduleOptions.filter(schedule => schedule.value === newTimesheet.payroll_schedule_id)} options={payrollScheduleOptions} name="payroll_schedule" classNamePrefix="payroll-schedule"/>
           </Form.Group>
           <Form.Group>
             <Form.Label>Date range in schedule</Form.Label>
-            <Select onChange={handlePayPeriodChange} value={dateRanges.filter(range => range.value == newTimesheet.pay_period_id)} options={dateRanges} />
+            <Select onChange={handlePayPeriodChange} value={dateRanges.filter(range => range.value === newTimesheet.pay_period_id)} options={dateRanges} name="pay_period" classNamePrefix="pay-period"/>
           </Form.Group>
           <Form.Group className="mt-3">
             <Button onClick={handleSubmit}>Submit</Button>

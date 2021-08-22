@@ -1,6 +1,5 @@
 {
   "baseUrl": "http://localhost:3456",
-  "retries": 50,
   "video": false,
   "watchForFileChanges": true
 }
