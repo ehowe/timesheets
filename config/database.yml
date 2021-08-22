@@ -10,7 +10,11 @@ development: &local
   password:
   database: timesheets
 
-test:
+test: &test
   <<: *default
   <<: *local
   database: timesheets-test
+
+cypress:
+  <<: *test
+  database: timesheets-cypress

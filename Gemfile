@@ -15,7 +15,7 @@ gem "sequel-devise", "~> 0.0.13"
 gem "sequel-rails",  "~> 1.1.1"
 gem "webpacker",     "~> 5.4.0"
 
-group :development, :test do
+group :development, :test, :cypress do
   gem "awesome_print"
   gem "byebug", platforms: [:mri, :mingw, :x64_mingw]
   gem "dotenv-rails", "~> 2.7.6"
@@ -29,7 +29,7 @@ group :development, :test do
   gem "solargraph"
 end
 
-group :development do
+group :development, :cypress do
   gem "listen", "~> 3.3"
 end
 
