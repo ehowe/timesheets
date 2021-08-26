@@ -1,7 +1,7 @@
 import * as React from 'react'
 import { Redirect, useLocation } from 'react-router-dom'
 import Select from 'react-select'
-import { uniq } from 'lodash'
+import { uniqBy } from 'lodash'
 
 import { PayPeriodT, ScheduleT } from '../model.types'
 
@@ -96,9 +96,8 @@ const Sheets: React.FC = () => {
 
     client.request({ path: '/api/timesheets', method: 'post', data: { timesheet: { pay_period_id: newTimesheet.pay_period_id } } })
       .then(response => {
+        setSheets(uniqBy([...sheets, response.data.sheet], 'id'))
         setOpen(false)
-        const newSheets = [...sheets, response.data.sheet]
-        setSheets(uniq(newSheets))
       })
       .catch(error => {
         console.log(error)

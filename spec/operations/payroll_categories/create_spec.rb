@@ -8,7 +8,7 @@ describe PayrollCategories::Create do
     operation = described_class.(admin_user: admin, params: valid_params)
 
     expect(operation).to be_success
-    expect(operation.result).to match(name: "Payroll Category")
+    expect(operation.result).to match(id: an_instance_of(Integer), name: "Payroll Category")
   end
 
   it "aborts if the user is not an admin" do

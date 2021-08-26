@@ -4,7 +4,7 @@ import * as dateFns from 'date-fns'
 import DatePicker from 'react-date-picker'
 import TimePicker from 'react-time-picker'
 import { Redirect } from 'react-router-dom'
-import { capitalize } from 'lodash'
+import { capitalize, uniqBy } from 'lodash'
 
 import {
   Button,
@@ -35,6 +35,7 @@ const Sheet: React.FC = () => {
   const [categories, setCategories] = React.useState<Array<PayrollCategoryT>>([])
   const [redirect, setRedirect] = React.useState(false)
   const [open, setOpen] = React.useState(false)
+  const [formError, setFormError] = React.useState('')
 
   const NEW_ENTRY: StateT = {}
 
@@ -87,6 +88,8 @@ const Sheet: React.FC = () => {
 
     date.setHours(hours)
     date.setMinutes(minutes)
+    date.setSeconds(0)
+    date.setMilliseconds(0)
 
     dispatchEntry({ [key]: date })
   }
@@ -96,11 +99,14 @@ const Sheet: React.FC = () => {
 
     client.request({ path: `/api/timesheets/${id}/entries`, method: 'post', data: { entry: newEntry } })
       .then(response => {
-        setEntries([ response.data.entry, ...entries ])
+        setEntries(uniqBy([ response.data.entry, ...entries ], 'id'))
         setOpen(false)
       })
       .catch(error => {
-        console.log(error)
+        console.log(error.response)
+        if (error.response) {
+          setFormError(error.response.data.message)
+        }
       })
       .finally(() => setLoading(false))
   }
@@ -148,6 +154,7 @@ const Sheet: React.FC = () => {
       <Button variant="primary" onClick={() => setOpen(true)}>Create new entry</Button>
       <Modal title="Add Entry" handleClose={() => setOpen(false)} show={open}>
         <Form>
+          { formError.length > 0 && <p className="text-danger">{formError}</p> }
           <Form.Group>
             <Form.Label>Start Date</Form.Label>
             <DatePicker onChange={(date: Date) => handleDateChange({ key: 'start_at', date })} value={newEntry.start_at} className="form-control start-date" name="start_date"/>
