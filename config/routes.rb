@@ -10,6 +10,8 @@ Rails.application.routes.draw do
 
     resources :timesheets, only: [:create, :destroy, :show, :update, :index] do
       member do
+        get :pay_period
+
         resources :entries, only: [:create, :destroy, :update, :index]
       end
     end

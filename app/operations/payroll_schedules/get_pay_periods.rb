@@ -9,12 +9,16 @@ module PayrollSchedules
       insert_args = []
       select_args = { start_at: [], end_at: [], payroll_schedule_id: payroll_schedule.id }
 
-      until iterator > now_in_timezone
+      loop do
         next_iterator = iterator + payroll_schedule.length_in_days.days
 
         insert_args << { start_at: iterator, end_at: next_iterator, payroll_schedule_id: payroll_schedule.id }
         select_args[:start_at] << iterator
         select_args[:end_at] << iterator
+
+        if iterator > now_in_timezone
+          break
+        end
 
         iterator = next_iterator
       end

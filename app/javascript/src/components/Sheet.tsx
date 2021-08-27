@@ -13,7 +13,11 @@ import {
   Table,
 } from 'react-bootstrap'
 
-import { PayrollCategoryT, EntryT } from '../model.types'
+import {
+  EntryT,
+  PayPeriodT,
+  PayrollCategoryT,
+} from '../model.types'
 
 import client from './client'
 import { DispatchLoadingContext } from './LoadingProvider'
@@ -36,6 +40,7 @@ const Sheet: React.FC = () => {
   const [redirect, setRedirect] = React.useState(false)
   const [open, setOpen] = React.useState(false)
   const [formError, setFormError] = React.useState('')
+  const [payPeriod, setPayPeriod] = React.useState<PayPeriodT>(null)
 
   const NEW_ENTRY: StateT = {}
 
@@ -53,6 +58,11 @@ const Sheet: React.FC = () => {
       })
       .then(response => {
         setCategories(response.data.payroll_categories)
+
+        return client.request({ path: `/api/timesheets/${id}/pay_period`, method: 'get' })
+      })
+      .then(response => {
+        setPayPeriod(response.data.pay_period)
       })
       .catch(error => {
         if (error.response && error.response.status === 401) {
@@ -119,6 +129,21 @@ const Sheet: React.FC = () => {
     return Object.values(newEntry).filter(value => typeof value === 'string').some((value: any) => value.length === 0)
   }
 
+  const disabledDates = ({ date }): boolean => {
+    if (!payPeriod) {
+      return false
+    }
+
+    const start = dateFns.parseISO(payPeriod.start)
+    const end = dateFns.parseISO(payPeriod.end)
+
+    if (date < start || date > end) {
+      return true
+    }
+
+    return false
+  }
+
   return (
     <Row>
       { redirect && <Redirect to="/users/sign_in" /> }
@@ -157,7 +182,7 @@ const Sheet: React.FC = () => {
           { formError.length > 0 && <p className="text-danger">{formError}</p> }
           <Form.Group>
             <Form.Label>Start Date</Form.Label>
-            <DatePicker onChange={(date: Date) => handleDateChange({ key: 'start_at', date })} value={newEntry.start_at} className="form-control start-date" name="start_date"/>
+            <DatePicker onChange={(date: Date) => handleDateChange({ key: 'start_at', date })} value={newEntry.start_at} className="form-control start-date" name="start_date" tileDisabled={disabledDates}/>
           </Form.Group>
           <Form.Group>
             <Form.Label>Start Time</Form.Label>
@@ -165,7 +190,7 @@ const Sheet: React.FC = () => {
           </Form.Group>
           <Form.Group className="mt-1">
             <Form.Label>End Date</Form.Label>
-            <DatePicker onChange={(date: Date) => handleDateChange({ key: 'end_at', date })} value={newEntry.end_at} className="form-control end-date" name="end_date"/>
+            <DatePicker onChange={(date: Date) => handleDateChange({ key: 'end_at', date })} value={newEntry.end_at} className="form-control end-date" name="end_date" tileDisabled={disabledDates}/>
           </Form.Group>
           <Form.Group>
             <Form.Label>End Time</Form.Label>

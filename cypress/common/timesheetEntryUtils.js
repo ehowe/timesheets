@@ -1,10 +1,18 @@
+export const clickNewEntryButton = () => {
+  cy.get('button').contains('Create new entry').click()
+}
+
+export const clickStartDate = () => {
+  cy.get('.start-date').click()
+}
+
 export const createTimesheetEntry = (props) => {
   const {
     payrollCategory = 'Test category',
   } = props
 
-  cy.get('button').contains('Create new entry').click()
-  cy.get('.start-date').click()
+  clickNewEntryButton()
+  clickStartDate()
   cy.get('.start-date').find('[aria-label="August 22, 2021"]').click()
   cy.get('.end-date').click()
   cy.get('.end-date').find('[aria-label="August 22, 2021"]').click()

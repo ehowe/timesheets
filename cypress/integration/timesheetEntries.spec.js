@@ -1,6 +1,8 @@
 import { login } from '../common/loginUtils'
 import { createTimesheet } from '../common/timesheetUtils'
-import { createTimesheetEntry } from '../common/timesheetEntryUtils'
+import { clickNewEntryButton, clickStartDate, createTimesheetEntry } from '../common/timesheetEntryUtils'
+
+import * as dateFns from 'date-fns'
 
 describe('Timesheet Entries', () => {
   beforeEach(() => {
@@ -13,7 +15,25 @@ describe('Timesheet Entries', () => {
     cy.get('.timesheetHeader').contains('No Entries in this Timesheet').should('be.visible')
   })
 
-  it.only('creates a new timesheet entry', () => {
+  it('creates a new timesheet entry', () => {
     createTimesheetEntry({})
+  })
+
+  it.only('has dates disabled that are not in the pay period', () => {
+    clickNewEntryButton()
+    clickStartDate()
+
+    const todayDate = new Date()
+    const prevDate = new Date()
+
+    prevDate.setMonth(todayDate.getMonth() - 1)
+    prevDate.setDate(1)
+
+    const today = dateFns.format(todayDate, 'MMMM d, yyyy')
+    const prevSelector = dateFns.format(prevDate, 'MMMM d, yyyy')
+
+    cy.get('.start-date').find(`[aria-label="${today}"]`).parent().should('not.be.disabled')
+    cy.get('.react-calendar__navigation__prev-button').click()
+    cy.get('.start-date').find(`[aria-label="${prevSelector}"]`).parent().should('be.disabled')
   })
 })

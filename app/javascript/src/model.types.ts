@@ -19,8 +19,10 @@ export type ScheduleT = {
 }
 
 export type PayPeriodT = {
+  end: string,
   end_at: string,
   id: number,
+  start: string,
   start_at: string,
 }
 
