@@ -185,7 +185,7 @@ const AdminPayroll: React.FC = () => {
           }
         </tbody>
       </Table>
-      <Button variant="primary" onClick={() => setAddCategoryOpen(true)} disabled={submitDisabled()}>Create new payroll category</Button>
+      <Button variant="primary" onClick={() => setAddCategoryOpen(true)}>Create new payroll category</Button>
       <Modal title="Create Schedule" handleClose={() => setAddScheduleOpen(false)} show={addScheduleOpen}>
         <Form>
           { scheduleFormError.length > 0 && <p className="text-danger">There was an error completing this request: {scheduleFormError}</p> }
@@ -209,7 +209,7 @@ const AdminPayroll: React.FC = () => {
             />
           </Form.Group>
           <Form.Group className="mt-3">
-            <Button onClick={scheduleSubmit}>Submit</Button>
+            <Button onClick={scheduleSubmit} disabled={submitDisabled()}>Submit</Button>
           </Form.Group>
         </Form>
       </Modal>

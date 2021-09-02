@@ -1,3 +1,5 @@
+import * as dateFns from 'date-fns'
+
 export const clickNewEntryButton = () => {
   cy.get('button').contains('Create new entry').click()
 }
@@ -11,11 +13,14 @@ export const createTimesheetEntry = (props) => {
     payrollCategory = 'Test category',
   } = props
 
+  const todayDate = new Date()
+  const today = dateFns.format(todayDate, 'MMMM d, yyyy')
+
   clickNewEntryButton()
   clickStartDate()
-  cy.get('.start-date').find('[aria-label="August 22, 2021"]').click()
+  cy.get('.start-date').find(`[aria-label="${today}"]`).click()
   cy.get('.end-date').click()
-  cy.get('.end-date').find('[aria-label="August 22, 2021"]').click()
+  cy.get('.end-date').find(`[aria-label="${today}"]`).click()
   cy.get('.start-time').find('.react-time-picker__inputGroup__hour').type('7')
   cy.get('.start-time').find('.react-time-picker__inputGroup__minute').type('00')
   cy.get('.start-time').find('.react-time-picker__inputGroup__amPm').select('am')

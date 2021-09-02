@@ -19,7 +19,7 @@ describe('Timesheet Entries', () => {
     createTimesheetEntry({})
   })
 
-  it.only('has dates disabled that are not in the pay period', () => {
+  it('has dates disabled that are not in the pay period', () => {
     clickNewEntryButton()
     clickStartDate()
 
