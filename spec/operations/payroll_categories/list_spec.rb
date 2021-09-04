@@ -12,6 +12,20 @@ describe PayrollCategories::List do
     expect(operation.result).to eq(expected)
   end
 
+  it "lists categories scoped to the user" do
+    user = create(:user)
+
+    user.add_payroll_category(category1)
+
+    operation = described_class.(user: user)
+    expected  = [
+      PayrollCategoryPresenter.display(category1)
+    ]
+
+    expect(operation).to be_success
+    expect(operation.result).to eq(expected)
+  end
+
   it "returns an error result if an error is encountered" do
     expect(PayrollCategoryPresenter).to receive(:display).and_raise(RuntimeError)
 

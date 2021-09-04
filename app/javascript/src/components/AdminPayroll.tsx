@@ -181,7 +181,7 @@ const AdminPayroll: React.FC = () => {
         <tbody>
           { categories.length == 0
             ? <tr><td>No categories found</td></tr>
-            : categories.map(category => <tr><td key={category.name}>{category.name}</td></tr>)
+            : categories.map((category, i) => <tr key={i}><td key={category.name}>{category.name}</td></tr>)
           }
         </tbody>
       </Table>

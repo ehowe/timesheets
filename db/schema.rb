@@ -60,6 +60,7 @@ Sequel.migration do
       foreign_key :category_id, :payroll_categories, :type=>"bigint", :null=>false, :key=>[:id]
       
       index [:category_id]
+      index [:user_id, :category_id], :name=>:user_categories_user_id_category_id_key, :unique=>true
       index [:user_id]
     end
     

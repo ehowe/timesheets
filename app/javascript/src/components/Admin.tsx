@@ -11,7 +11,7 @@ import AdminUsers from './AdminUsers'
 
 const Admin: React.FC = () => {
   return (
-    <Container>
+    <React.Fragment>
       <Tabs defaultActiveKey="payroll">
         <Tab eventKey="payroll" title="Payroll" mountOnEnter>
           <AdminPayroll />
@@ -20,7 +20,7 @@ const Admin: React.FC = () => {
           <AdminUsers />
         </Tab>
       </Tabs>
-    </Container>
+    </React.Fragment>
   )
 }
 

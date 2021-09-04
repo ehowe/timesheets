@@ -21,6 +21,7 @@ Rails.application.routes.draw do
       resources :payroll_schedules
       resources :users do
         member do
+          put :payroll_categories
           put :lock
         end
       end
@@ -31,6 +32,8 @@ Rails.application.routes.draw do
         get :pay_periods
       end
     end
+
+    get "/users/:id/payroll_categories", to: "users#payroll_categories"
   end
 
   root "pages#index", as: :pages_index

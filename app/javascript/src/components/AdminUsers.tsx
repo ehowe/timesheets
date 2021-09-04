@@ -1,16 +1,22 @@
 import * as React from 'react'
 import { LockFill, UnlockFill } from 'react-bootstrap-icons'
+import { chunk, remove } from 'lodash'
 
 import { UserT } from '../model.types'
 
 import {
   Button,
+  Col,
+  Container,
   Form,
+  InputGroup,
   OverlayTrigger,
   Row,
   Table,
   Tooltip,
 } from 'react-bootstrap'
+
+import Select from 'react-select'
 
 import client from './client'
 import { DispatchLoadingContext } from './LoadingProvider'
@@ -23,7 +29,10 @@ const AdminUsers: React.FC = () => {
   const [users, setUsers] = React.useState([])
   const [open, setOpen] = React.useState(false)
   const [formError, setFormError] = React.useState(false)
-  const [loadUsers, setLoadUsers] = React.useState(true)
+  const [editCategoriesOpen, setEditCategoriesOpen] = React.useState(false)
+  const [selectedUser, setSelectedUser] = React.useState(null)
+  const [allPayrollCategories, setAllPayrollCategories] = React.useState([])
+  const [userPayrollCategories, setUserPayrollCategories] = React.useState([])
 
   const INIT_STATE = {
     email: '',
@@ -36,17 +45,31 @@ const AdminUsers: React.FC = () => {
   const [state, dispatch] = React.useReducer(reducer, INIT_STATE)
 
   React.useEffect(() => {
+
+  }, [allPayrollCategories, userPayrollCategories])
+
+  React.useEffect(() => {
     setLoading(true)
 
     client.request({ path: '/api/admin/users', method: 'get' })
       .then(response => {
         setUsers(response.data.users)
+
+        return client.request({ path: '/api/admin/payroll_categories', method: 'get' })
       })
+      .then(response => setAllPayrollCategories(response.data.payroll_categories))
       .catch(error => {
         console.log(error)
       })
       .finally(() => setLoading(false))
   }, [])
+
+  React.useEffect(() => {
+    if (selectedUser) {
+      client.request({ path: `/api/admin/payroll_categories`, method: 'get', params: { user_id: selectedUser.id } })
+        .then(response => setUserPayrollCategories(response.data.payroll_categories))
+    }
+  }, [selectedUser])
 
   const handleLockChange = (user: UserT) => {
     setLoading(true)
@@ -86,6 +109,45 @@ const AdminUsers: React.FC = () => {
 
   const ConditionalWrapper = ({ condition, wrapper, children }) => (condition ? wrapper(children) : children)
 
+  const handleMoreOptionsSelect = (user: any, e: any) => {
+    setSelectedUser(user)
+
+    if (e.value === 'modify_payroll_categories') {
+      setEditCategoriesOpen(true)
+    }
+  }
+
+  const moreOptionsOptions = [
+    { label: 'Select an action', value: '' },
+    { label: 'Modify Payroll Categories', value: 'modify_payroll_categories' },
+  ]
+
+  const handleCategoryCheck = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const catExists = userPayrollCategories.map(cat => cat.id).includes(parseInt(e.target.value))
+
+    const newCategories = [...userPayrollCategories]
+
+    if (catExists) {
+      remove(newCategories, (cat) => cat.id === parseInt(e.target.value))
+    } else {
+      const category = allPayrollCategories.find(category => category.id === parseInt(e.target.value))
+      newCategories.push(category)
+    }
+
+    setUserPayrollCategories(newCategories)
+  }
+
+  const saveUserCategories = () => {
+    client.request({ path: `/api/admin/users/${selectedUser.id}/payroll_categories`, method: 'put', data: { categories: userPayrollCategories } })
+      .then(response => {
+        setUserPayrollCategories(response.data.payroll_categories)
+      })
+      .finally(() => {
+        setEditCategoriesOpen(false)
+        setSelectedUser(null)
+      })
+  }
+
   return (
     <Row className="m-3">
       <Table borderless hover responsive striped>
@@ -98,6 +160,7 @@ const AdminUsers: React.FC = () => {
             <th>Admin</th>
             <th>Locked</th>
             <th style={{ textAlign: 'center' }}>Lock/Unlock</th>
+            <th>More Options</th>
           </tr>
         </thead>
         <tbody>
@@ -125,6 +188,12 @@ const AdminUsers: React.FC = () => {
                       </Button>
                     </div>
                   </ConditionalWrapper>
+                </td>
+                <td>
+                  <Select
+                    onChange={(e: any) => handleMoreOptionsSelect(user, e)}
+                    options={moreOptionsOptions}
+                  />
                 </td>
               </tr>
             ))
@@ -154,6 +223,30 @@ const AdminUsers: React.FC = () => {
             <Button onClick={handleUserSubmit}>Submit</Button>
           </Form.Group>
         </Form>
+      </Modal>
+      <Modal title="Edit Payroll Categories" handleClose={() => setEditCategoriesOpen(false)} show={editCategoriesOpen}>
+        <Container className="p-0">
+          { chunk(allPayrollCategories, 2).map((categories, i) => (
+            <Row key={i}>
+              { categories.map(category => (
+                <Col key={category.id}>
+                  <InputGroup className="mb-3">
+                    <InputGroup.Checkbox
+                      aria-label={category.name}
+                      checked={userPayrollCategories.map(({ id }: { id: number }) => id).includes(category.id)}
+                      onChange={handleCategoryCheck}
+                      value={category.id}
+                    />
+                    <InputGroup.Text className="w-75">{category.name}</InputGroup.Text>
+                  </InputGroup>
+                </Col>
+              ))}
+            </Row>
+          ))}
+          <Form.Group className="mt-3">
+            <Button onClick={saveUserCategories} className="w-100">Submit</Button>
+          </Form.Group>
+        </Container>
       </Modal>
     </Row>
   )

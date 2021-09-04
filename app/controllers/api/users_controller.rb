@@ -1,15 +1,15 @@
 module Api
   class UsersController < ApplicationController
-    def index
-      render json: User.all
-    end
+    before_action :fetch_user
 
-    def destroy
-      user = User.find(params[:id])
-      user.destroy
-      render json: {}, status: :ok
-    rescue ActiveRecord::RecordNotFound
-      render json: {}, status: :not_found
+    def payroll_categories
+      operation = PayrollCategories::List.(user: current_user)
+
+      unless operation.success?
+        render json: operation.result, status: 422 and return
+      end
+
+      render json: { payroll_categories: operation.result } and return
     end
   end
 end

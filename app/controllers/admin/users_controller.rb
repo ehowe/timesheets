@@ -28,4 +28,14 @@ class Admin::UsersController < AdminController
 
     render json: { user: operation.result }
   end
+
+  def payroll_categories
+    operation = Users::EditPayrollCategories.(admin_user: current_user, user_id: params.require(:id), categories: params.require(:categories).map { |c| c.permit!.to_h })
+
+    unless operation.success?
+      render json: { error: operation.result }, status: 422 and return
+    end
+
+    render json: { payroll_categories: operation.result }
+  end
 end

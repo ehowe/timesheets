@@ -54,7 +54,7 @@ const Sheet: React.FC = () => {
       .then(response => {
         setEntries(response.data.entries)
 
-        return client.request({ path: `/api/admin/payroll_categories`, method: 'get' })
+        return client.request({ path: `/api/admin/payroll_categories`, method: 'get', params: { user_id: id } })
       })
       .then(response => {
         setCategories(response.data.payroll_categories)
@@ -137,6 +137,8 @@ const Sheet: React.FC = () => {
     const start = dateFns.parseISO(payPeriod.start)
     const end = dateFns.parseISO(payPeriod.end)
 
+    start.setHours(0, 0, 0, 0)
+
     if (date < start || date > end) {
       return true
     }
@@ -182,7 +184,7 @@ const Sheet: React.FC = () => {
           { formError.length > 0 && <p className="text-danger">{formError}</p> }
           <Form.Group>
             <Form.Label>Start Date</Form.Label>
-            <DatePicker onChange={(date: Date) => handleDateChange({ key: 'start_at', date })} value={newEntry.start_at} className="form-control start-date" name="start_date" tileDisabled={disabledDates}/>
+            <DatePicker onChange={(date: Date) => handleDateChange({ key: 'start_at', date })} value={newEntry.start_at} className="form-control start-date" name="start_date" tileDisabled={disabledDates} calendarType="US"/>
           </Form.Group>
           <Form.Group>
             <Form.Label>Start Time</Form.Label>
@@ -190,7 +192,7 @@ const Sheet: React.FC = () => {
           </Form.Group>
           <Form.Group className="mt-1">
             <Form.Label>End Date</Form.Label>
-            <DatePicker onChange={(date: Date) => handleDateChange({ key: 'end_at', date })} value={newEntry.end_at} className="form-control end-date" name="end_date" tileDisabled={disabledDates}/>
+            <DatePicker onChange={(date: Date) => handleDateChange({ key: 'end_at', date })} value={newEntry.end_at} className="form-control end-date" name="end_date" tileDisabled={disabledDates} calendarType="US"/>
           </Form.Group>
           <Form.Group>
             <Form.Label>End Time</Form.Label>
@@ -199,7 +201,7 @@ const Sheet: React.FC = () => {
           <Form.Group className="mt-1">
             <Form.Label>Payroll Category</Form.Label>
             <Form.Select required onChange={handlePayrollCategoryChange} name="payroll_category_id" value={newEntry.payroll_category_id}>
-              <option>Select a payroll category</option>
+              <option>{categories.length > 0 ? 'Select a payroll category' : 'User has no payroll categories'}</option>
               { categories.map((category: PayrollCategoryT) => <option key={category.id} value={category.id}>{category.name}</option>) }
             </Form.Select>
           </Form.Group>
