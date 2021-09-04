@@ -19,7 +19,7 @@ production:
   <<: *default
   host: <%= ENV["DATABASE_HOST"] %>
   username: <%= ENV["DATABASE_USER"] %>
-  password: <%= ENV["DATABASE_PASS"] %>
+  password: <%= ENV["DATABASE_PASSWORD"] %>
   database: <%= ENV["DATABASE_DATABASE"] %>
 
 cypress:
