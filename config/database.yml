@@ -17,7 +17,10 @@ test: &test
 
 production:
   <<: *default
-  host: <%= ENV["DATABASE_URL"] %>
+  host: <%= ENV["DATABASE_HOST"] %>
+  username: <%= ENV["DATABASE_USER"] %>
+  password: <%= ENV["DATABASE_PASS"] %>
+  database: <%= ENV["DATABASE_DATABASE"] %>
 
 cypress:
   <<: *test
