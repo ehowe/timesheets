@@ -15,6 +15,10 @@ test: &test
   <<: *local
   database: timesheets-test
 
+production:
+  <<: *default
+  host: <%= ENV["DATABASE_URL"] %>
+
 cypress:
   <<: *test
   database: timesheets-cypress
