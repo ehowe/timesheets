@@ -20,7 +20,6 @@ import {
 
 import client from './client'
 import { DispatchLoadingContext } from './LoadingProvider'
-import { DispatchLoginContext } from './login/LoginProvider'
 import { SetExpiredLoginContext } from './ExpiredLoginProvider'
 import Modal from './Modal'
 
@@ -32,7 +31,6 @@ type StateT = {
 
 const Sheet: React.FC = () => {
   const { id } = ReactRouterDOM.useParams<{ id: string }>()
-  const dispatch = React.useContext(DispatchLoginContext)
   const setLoading = React.useContext(DispatchLoadingContext)
   const handleErrorResponse = React.useContext<any>(SetExpiredLoginContext).handleErrorResponse
 

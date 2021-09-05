@@ -1,4 +1,13 @@
 export const createTimesheet = () => {
+  cy.server()
+  cy.route({
+    method: 'GET',
+    url: '**/api/admin/payroll_categories*',
+    response: {
+      payroll_categories: [{ id: 1, name: 'Test category' }]
+    }
+  })
+
   cy.visit('/')
   cy.get('button').contains('Create new timesheet').click()
 

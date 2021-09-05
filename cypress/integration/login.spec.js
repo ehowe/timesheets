@@ -13,7 +13,7 @@ describe('Before login', () => {
 describe('Login', () => {
   it('logs in', () => {
     login('test@test.com', 'asdf')
-    cy.url().should('eq', Cypress.config().baseUrl + '/')
+    cy.url().should('eq', Cypress.config().baseUrl + '/timesheets')
     cy.get('a').contains('Admin').should('not.exist')
   })
 
@@ -27,7 +27,7 @@ describe('Login', () => {
 
   it('logs in an admin', () => {
     login('admin@test.com', 'asdf')
-    cy.url().should('eq', Cypress.config().baseUrl + '/')
+    cy.url().should('eq', Cypress.config().baseUrl + '/timesheets')
     cy.get('a').contains('Admin').should('be.visible')
   })
 })

@@ -97,10 +97,21 @@ const App: React.FC = () => {
                   <LoginRouter hide={['register']}>
                     { loggedIn && (
                       <React.Fragment>
-                        <Router.Route exact path="/" component={Sheets} />
+                        <Router.Route exact path="/timesheets" component={Sheets} />
                         <Router.Route path="/timesheets/:id" component={Sheet} />
+                        <Router.Route exact path="/">
+                          <Router.Redirect to="/timesheets" />
+                        </Router.Route>
                         { user.admin && (
-                          <Router.Route path="/admin" component={Admin} />
+                          <React.Fragment>
+                            <Router.Route exact path="/admin/timesheets" component={Admin} />
+                            <Router.Route exact path="/admin/payroll_schedules" component={Admin} />
+                            <Router.Route exact path="/admin/payroll_categories" component={Admin} />
+                            <Router.Route exact path="/admin/users" component={Admin} />
+                            <Router.Route exact path="/admin">
+                              <Router.Redirect to="/admin/timesheets" />
+                            </Router.Route>
+                          </React.Fragment>
                         )}
                       </React.Fragment>
                     )}

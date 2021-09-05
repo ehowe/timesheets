@@ -24,8 +24,6 @@ export const ExpiredLoginProvider: React.FC<PropsT> = (props: PropsT) => {
     }
   }
 
-  console.log(expiredLogin)
-
   return(
     <SetExpiredLoginContext.Provider value={{ handleErrorResponse }}>
       { expiredLogin && <Redirect to="/" /> }
