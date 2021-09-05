@@ -5,15 +5,23 @@ import {
   Tabs,
 } from 'react-bootstrap'
 
-import AdminPayroll from './AdminPayroll'
+import AdminPayrollCategories from './AdminPayrollCategories'
+import AdminPayrollSchedules from './AdminPayrollSchedules'
+import AdminTimesheets from './AdminTimesheets'
 import AdminUsers from './AdminUsers'
 
 const Admin: React.FC = () => {
   return (
     <React.Fragment>
-      <Tabs defaultActiveKey="payroll">
-        <Tab eventKey="payroll" title="Payroll" mountOnEnter>
-          <AdminPayroll />
+      <Tabs defaultActiveKey="timesheets">
+        <Tab eventKey="timesheets" title="Timesheets" mountOnEnter>
+          <AdminTimesheets />
+        </Tab>
+        <Tab eventKey="payrollCategories" title="Payroll Categories" mountOnEnter>
+          <AdminPayrollCategories />
+        </Tab>
+        <Tab eventKey="payrollSchedules" title="Payroll Schedules" mountOnEnter>
+          <AdminPayrollSchedules />
         </Tab>
         <Tab eventKey="users" title="Users" mountOnEnter>
           <AdminUsers />

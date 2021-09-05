@@ -24,6 +24,7 @@ group :development, :test, :cypress do
   gem "faraday"
   gem "faraday_middleware"
   gem "factory_bot_rails"
+  gem "foreman"
   gem "pry-byebug"
   gem "rubocop"
   gem "rspec-rails"

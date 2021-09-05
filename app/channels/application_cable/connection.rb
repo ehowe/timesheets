@@ -10,11 +10,9 @@ module ApplicationCable
       user_id      = decoded_jwt["id"]
       current_user = User[user_id.to_i]
 
-      if current_user
-        current_user
-      else
-        reject_unauthorized_connection
-      end
+      return current_user if current_user
+
+      reject_unauthorized_connection
     end
 
     def decoded_jwt

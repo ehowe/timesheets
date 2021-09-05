@@ -13,10 +13,8 @@ export const WebsocketsProvider: React.FC<PropsT> = (props: PropsT) => {
 
   React.useEffect(() => {
     client.onopen = () => {
-      console.log('WebSocket Client Connected')
     }
     client.onmessage = (message: IMessageEvent) => {
-      console.log(message);
     };
   }, [])
 
