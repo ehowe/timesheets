@@ -3,7 +3,6 @@ import * as ReactRouterDOM from 'react-router-dom'
 import * as dateFns from 'date-fns'
 import DatePicker from 'react-date-picker'
 import TimePicker from 'react-time-picker'
-import { Redirect } from 'react-router-dom'
 import { capitalize, uniqBy } from 'lodash'
 
 import {
@@ -22,6 +21,7 @@ import {
 import client from './client'
 import { DispatchLoadingContext } from './LoadingProvider'
 import { DispatchLoginContext } from './login/LoginProvider'
+import { SetExpiredLoginContext } from './ExpiredLoginProvider'
 import Modal from './Modal'
 
 type StateT = {
@@ -34,10 +34,10 @@ const Sheet: React.FC = () => {
   const { id } = ReactRouterDOM.useParams<{ id: string }>()
   const dispatch = React.useContext(DispatchLoginContext)
   const setLoading = React.useContext(DispatchLoadingContext)
+  const handleErrorResponse = React.useContext<any>(SetExpiredLoginContext).handleErrorResponse
 
   const [entries, setEntries] = React.useState<Array<EntryT>>([])
   const [categories, setCategories] = React.useState<Array<PayrollCategoryT>>([])
-  const [redirect, setRedirect] = React.useState(false)
   const [open, setOpen] = React.useState(false)
   const [formError, setFormError] = React.useState('')
   const [payPeriod, setPayPeriod] = React.useState<PayPeriodT>(null)
@@ -65,11 +65,7 @@ const Sheet: React.FC = () => {
         setPayPeriod(response.data.pay_period)
       })
       .catch(error => {
-        if (error.response && error.response.status === 401) {
-          dispatch({ type: 'logout' })
-          dispatch({ type: 'alert', use: 'ALERT_ERROR', payload: 'Session expired' })
-          setRedirect(true)
-        }
+        handleErrorResponse(error)
       })
       .finally(() => setLoading(false))
   }, [])
@@ -113,7 +109,7 @@ const Sheet: React.FC = () => {
         setOpen(false)
       })
       .catch(error => {
-        console.log(error.response)
+        handleErrorResponse(error)
         if (error.response) {
           setFormError(error.response.data.message)
         }
@@ -148,7 +144,6 @@ const Sheet: React.FC = () => {
 
   return (
     <Row>
-      { redirect && <Redirect to="/users/sign_in" /> }
       <Table borderless hover responsive striped>
         <caption>Hours Logged</caption>
         <thead>

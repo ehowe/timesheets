@@ -28,5 +28,7 @@
 yarn-debug.log*
 .yarn-integrity
 
+/cypress/screenshots
+
 # environment variables
 .env

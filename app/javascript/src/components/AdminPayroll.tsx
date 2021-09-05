@@ -14,6 +14,7 @@ import {
 
 import client from './client'
 import { DispatchLoadingContext } from './LoadingProvider'
+import { SetExpiredLoginContext } from './ExpiredLoginProvider'
 import Modal from './Modal'
 
 type ScheduleStateT = {
@@ -27,6 +28,8 @@ type CategoryStateT = {
 }
 
 const AdminPayroll: React.FC = () => {
+  const handleErrorResponse = React.useContext<any>(SetExpiredLoginContext).handleErrorResponse
+
   const setLoading = React.useContext(DispatchLoadingContext)
   const [addScheduleOpen, setAddScheduleOpen] = React.useState(false)
   const [addCategoryOpen, setAddCategoryOpen] = React.useState(false)
@@ -98,6 +101,7 @@ const AdminPayroll: React.FC = () => {
         setSchedules([...schedules, response.data.schedule])
       })
       .catch(error => {
+        handleErrorResponse(error)
         console.log(error)
         setScheduleFormError(error.response.data)
       })
@@ -115,6 +119,7 @@ const AdminPayroll: React.FC = () => {
         setAddCategoryOpen(false)
       })
       .catch(error => {
+        handleErrorResponse(error)
         setCategoryFormError(error.response.data)
       })
       .finally(() => setLoading(false))
@@ -123,11 +128,13 @@ const AdminPayroll: React.FC = () => {
   React.useEffect(() => {
     client.request({ path: '/api/admin/payroll_schedules', method: 'get' })
       .then(response => setSchedules(response.data.payroll_schedules))
+      .catch(error => handleErrorResponse(error))
 
     client.request({ path: '/api/admin/payroll_categories', method: 'get' })
       .then(response => {
         setCategories(response.data.payroll_categories)
       })
+      .catch(error => handleErrorResponse(error))
   }, [])
 
   const submitDisabled = (): boolean => {

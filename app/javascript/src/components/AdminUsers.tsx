@@ -21,9 +21,12 @@ import Select from 'react-select'
 import client from './client'
 import { DispatchLoadingContext } from './LoadingProvider'
 import { LoginContext } from './login/LoginProvider'
+import { SetExpiredLoginContext } from './ExpiredLoginProvider'
 import Modal from './Modal'
 
 const AdminUsers: React.FC = () => {
+  const handleErrorResponse = React.useContext<any>(SetExpiredLoginContext).handleErrorResponse
+
   const { user: admin } = React.useContext(LoginContext)
   const setLoading = React.useContext(DispatchLoadingContext)
   const [users, setUsers] = React.useState([])
@@ -59,6 +62,7 @@ const AdminUsers: React.FC = () => {
       })
       .then(response => setAllPayrollCategories(response.data.payroll_categories))
       .catch(error => {
+        handleErrorResponse(error)
         console.log(error)
       })
       .finally(() => setLoading(false))
@@ -83,6 +87,7 @@ const AdminUsers: React.FC = () => {
         setUsers(updatedUsers)
       })
       .catch(error => {
+        handleErrorResponse(error)
         console.log(error)
       })
       .finally(() => setLoading(false))
@@ -101,6 +106,7 @@ const AdminUsers: React.FC = () => {
         setOpen(false)
       })
       .catch(error => {
+        handleErrorResponse(error)
         console.log(error)
         setFormError(true)
       })
@@ -141,6 +147,9 @@ const AdminUsers: React.FC = () => {
     client.request({ path: `/api/admin/users/${selectedUser.id}/payroll_categories`, method: 'put', data: { categories: userPayrollCategories } })
       .then(response => {
         setUserPayrollCategories(response.data.payroll_categories)
+      })
+      .catch(error => {
+        handleErrorResponse(error)
       })
       .finally(() => {
         setEditCategoriesOpen(false)

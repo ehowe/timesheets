@@ -10,9 +10,11 @@ gem "oj",            "~> 3.12.2"
 gem "pg",            "~> 1.2.3"
 gem "puma",          "~> 5.0"
 gem "rails",         "~> 6.1.4"
+gem "redis",         "~> 4.4.0"
 gem "sequel",        "~> 5.46"
 gem "sequel-devise", "~> 0.0.13"
 gem "sequel-rails",  "~> 1.1.1"
+gem "sidekiq",       "~> 6.2.2"
 gem "webpacker",     "~> 5.4.0"
 
 group :development, :test, :cypress do

@@ -38,5 +38,7 @@ Rails.application.routes.draw do
 
   root "pages#index", as: :pages_index
 
+  mount ActionCable.server => "/cable"
+
   match "*path", to: "pages#index", via: :all, constraints: -> (req) { !(req.fullpath =~ /^\/api\/.*/) }
 end

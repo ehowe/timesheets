@@ -1,7 +1,7 @@
 import * as React from 'react'
 
 type PropsT = {
-  children: Array<JSX.Element>,
+  children: JSX.Element | Array<JSX.Element>,
 }
 
 type DispatchT = (loading: boolean) => void

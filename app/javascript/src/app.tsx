@@ -14,8 +14,10 @@ import Sheet from './components/Sheet'
 import Sheets from './components/Sheets'
 import LoadingModal from './components/LoadingModal'
 import LoginRouter from './components/login/Router'
+import { ExpiredLoginProvider } from './components/ExpiredLoginProvider'
 import { LoadingProvider } from './components/LoadingProvider'
 import { LoginContext, DispatchLoginContext } from './components/login/LoginProvider'
+import { WebsocketsProvider } from './components/WebsocketsProvider'
 
 import FlashMessages from './components/login/alerts/FlashMessages'
 import DeviseSessionsNew from './components/login/login/sessions/DeviseSessionsNew'
@@ -53,64 +55,68 @@ const App: React.FC = () => {
 
   return (
     <LoadingProvider>
-      <LoadingModal />
-      <Router.BrowserRouter>
-        <Navbar variant="light" expand="md">
-          <Navbar.Brand href="/">Timesheets</Navbar.Brand>
-          { loggedIn && (
-            <Navbar.Text>{user.full_name}</Navbar.Text>
-          )}
-          <Nav className="ms-auto" navbar>
-            { loggedIn && (
-              <React.Fragment>
-                { user.admin && (
-                  <Nav.Item>
-                    <Nav.Link href="/admin">Admin</Nav.Link>
-                  </Nav.Item>
-                )}
-                <Nav.Item>
-                  <Nav.Link href="/">Sheets</Nav.Link>
-                </Nav.Item>
-              </React.Fragment>
-            )}
-            <Nav.Item>
-              { loggedIn
-                ? (
-                  <Nav.Link href="#" onClick={onLogout}>Logout</Nav.Link>
-                ) : (
-                  <Nav.Link href="/users/sign_in">Login</Nav.Link>
-                )
-              }
-            </Nav.Item>
-          </Nav>
-        </Navbar>
-        <Container fluid>
-          <Row>
-            <Col md={{ span: 2 }}>
-              <FlashMessages />
-            </Col>
-            <Col md={{ span: 8 }}>
-              <LoginRouter hide={['register']}>
+      <WebsocketsProvider>
+        <LoadingModal />
+        <Router.BrowserRouter>
+          <ExpiredLoginProvider>
+            <Navbar variant="light" expand="md">
+              <Navbar.Brand href="/">Timesheets</Navbar.Brand>
+              { loggedIn && (
+                <Navbar.Text>{user.full_name}</Navbar.Text>
+              )}
+              <Nav className="ms-auto" navbar>
                 { loggedIn && (
                   <React.Fragment>
-                    <Router.Route exact path="/" component={Sheets} />
-                    <Router.Route path="/timesheets/:id" component={Sheet} />
                     { user.admin && (
-                      <Router.Route path="/admin" component={Admin} />
+                      <Nav.Item>
+                        <Nav.Link href="/admin">Admin</Nav.Link>
+                      </Nav.Item>
                     )}
+                    <Nav.Item>
+                      <Nav.Link href="/">Sheets</Nav.Link>
+                    </Nav.Item>
                   </React.Fragment>
                 )}
-                { !loggedIn && (
-                  <React.Fragment>
-                    <Router.Route exact path="/" component={DeviseSessionsNew} />
-                    <Router.Route path="/users/sign_up" component={NewUser} />
-                  </React.Fragment>
-                )}
-              </LoginRouter>
-            </Col>
-          </Row>
-        </Container>
-      </Router.BrowserRouter>
+                <Nav.Item>
+                  { loggedIn
+                    ? (
+                      <Nav.Link href="#" onClick={onLogout}>Logout</Nav.Link>
+                    ) : (
+                      <Nav.Link href="/users/sign_in">Login</Nav.Link>
+                    )
+                  }
+                </Nav.Item>
+              </Nav>
+            </Navbar>
+            <Container fluid>
+              <Row>
+                <Col md={{ span: 2 }}>
+                  <FlashMessages />
+                </Col>
+                <Col md={{ span: 8 }}>
+                  <LoginRouter hide={['register']}>
+                    { loggedIn && (
+                      <React.Fragment>
+                        <Router.Route exact path="/" component={Sheets} />
+                        <Router.Route path="/timesheets/:id" component={Sheet} />
+                        { user.admin && (
+                          <Router.Route path="/admin" component={Admin} />
+                        )}
+                      </React.Fragment>
+                    )}
+                    { !loggedIn && (
+                      <React.Fragment>
+                        <Router.Route path="/users/sign_up" component={NewUser} />
+                        <Router.Redirect from="*" to="/users/sign_in" />
+                      </React.Fragment>
+                    )}
+                  </LoginRouter>
+                </Col>
+              </Row>
+            </Container>
+          </ExpiredLoginProvider>
+        </Router.BrowserRouter>
+      </WebsocketsProvider>
     </LoadingProvider>
   )
 }

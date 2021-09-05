@@ -1,12 +1,11 @@
 import * as React from 'react'
-import { Redirect, useLocation } from 'react-router-dom'
 import Select from 'react-select'
 import { uniqBy } from 'lodash'
 
 import { PayPeriodT, ScheduleT } from '../model.types'
 
 import { DispatchLoadingContext } from './LoadingProvider'
-import { DispatchLoginContext } from './login/LoginProvider'
+import { SetExpiredLoginContext } from './ExpiredLoginProvider'
 import Modal from './Modal'
 import client from './client'
 
@@ -19,12 +18,11 @@ import {
 } from 'react-bootstrap'
 
 const Sheets: React.FC = () => {
-  const dispatch = React.useContext(DispatchLoginContext)
+  const handleErrorResponse = React.useContext<any>(SetExpiredLoginContext).handleErrorResponse
 
   const setLoading = React.useContext(DispatchLoadingContext)
   const [sheets, setSheets] = React.useState([])
   const [payrollSchedules, setPayrollSchedules] = React.useState([])
-  const [redirectToLogin, setRedirectToLogin] = React.useState(false)
   const [open, setOpen] = React.useState(false)
   const [dateRanges, setDateRanges] = React.useState([])
   const [payrollScheduleOptions, setPayrollScheduleOptions] = React.useState<Array<{ label: string, value: number }>>([])
@@ -45,6 +43,9 @@ const Sheets: React.FC = () => {
     client.request({ path: `/api/payroll_schedules/${newTimesheet.payroll_schedule_id}/pay_periods`, method: 'get' })
       .then(response => {
         setDateRanges(response.data.pay_periods.map((pay_period: PayPeriodT) => ({ label: `${pay_period.start_at} - ${pay_period.end_at}`, value: pay_period.id })))
+      })
+      .catch((error: any) => {
+        handleErrorResponse(error)
       })
   }, [newTimesheet.payroll_schedule_id])
 
@@ -72,13 +73,7 @@ const Sheets: React.FC = () => {
       .then(response => {
         setSheets(response.data.sheets)
       })
-      .catch(error => {
-        if (error.response && error.response.status === 401) {
-          dispatch({ type: 'logout' })
-          dispatch({ type: 'alert', use: 'ALERT_ERROR', payload: 'Session expired' })
-          setRedirectToLogin(true)
-        }
-      })
+      .catch(error => handleErrorResponse(error))
       .finally(() => setLoading(false))
 
     client.request({ path: '/api/payroll_schedules', method: 'get' })
@@ -100,6 +95,7 @@ const Sheets: React.FC = () => {
         setOpen(false)
       })
       .catch(error => {
+        handleErrorResponse(error)
         console.log(error)
       })
       .finally(() => setLoading(false))
@@ -107,7 +103,6 @@ const Sheets: React.FC = () => {
 
   return (
     <Row>
-      { redirectToLogin && <Redirect to="/users/sign_in" /> }
       <Table borderless hover responsive striped className="timesheets">
         <thead>
           <tr>
