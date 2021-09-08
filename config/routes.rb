@@ -17,8 +17,10 @@ Rails.application.routes.draw do
     end
 
     namespace :admin do
+      resources :pay_periods, only: [:index]
       resources :payroll_categories
       resources :payroll_schedules
+
       resources :users do
         member do
           put :payroll_categories

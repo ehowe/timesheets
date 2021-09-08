@@ -20,7 +20,6 @@ import { LoginContext, DispatchLoginContext } from './components/login/LoginProv
 import { WebsocketsProvider } from './components/WebsocketsProvider'
 
 import FlashMessages from './components/login/alerts/FlashMessages'
-import DeviseSessionsNew from './components/login/login/sessions/DeviseSessionsNew'
 import sessionActions from './components/login/login/sessions/actions'
 import DeviseRegistrationsNew from './components/login/login/registrations/DeviseRegistrationsNew'
 

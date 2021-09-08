@@ -17,6 +17,11 @@ import {
   Table,
 } from 'react-bootstrap'
 
+type StateT = {
+  pay_period_id?: number,
+  payroll_schedule_id?: number,
+}
+
 const Sheets: React.FC = () => {
   const handleErrorResponse = React.useContext<any>(SetExpiredLoginContext).handleErrorResponse
 
@@ -27,18 +32,13 @@ const Sheets: React.FC = () => {
   const [dateRanges, setDateRanges] = React.useState([])
   const [payrollScheduleOptions, setPayrollScheduleOptions] = React.useState<Array<{ label: string, value: number }>>([])
 
-  const NEW_TIMESHEET = {
-    pay_period_id: '',
-    payroll_schedule_id: '',
-  }
-
-  const reducer = (state, update) => ({...state, ...update})
-  const [newTimesheet, dispatchTimesheet] = React.useReducer(reducer, NEW_TIMESHEET)
+  const reducer = (state: StateT, update: StateT) => ({...state, ...update})
+  const [newTimesheet, dispatchTimesheet] = React.useReducer(reducer, {})
 
   const headerText = sheets.length > 0 ? 'Select a pay period' : 'No timesheets found'
 
   React.useEffect(() => {
-    if (newTimesheet.payroll_schedule_id.length === 0) return
+    if (!newTimesheet.payroll_schedule_id) return
 
     client.request({ path: `/api/payroll_schedules/${newTimesheet.payroll_schedule_id}/pay_periods`, method: 'get' })
       .then(response => {

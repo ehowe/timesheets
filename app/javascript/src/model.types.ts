@@ -22,6 +22,7 @@ export type PayPeriodT = {
   end: string,
   end_at: string,
   id: number,
+  length_in_days: number,
   start: string,
   start_at: string,
 }
