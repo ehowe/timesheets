@@ -3,7 +3,6 @@ import * as dateFns from 'date-fns'
 import TimezoneSelect from 'react-timezone-select'
 import DatePicker from 'react-date-picker'
 import TimePicker from 'react-time-picker'
-import { sortBy } from 'lodash'
 
 import {
   Button,

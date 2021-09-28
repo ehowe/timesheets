@@ -1,39 +1,5 @@
 @import "~bootstrap/scss/bootstrap.scss";
 
-.navbar {
-  padding-left: 1em;
-  padding-right: 1em;
-}
-.container {
-  padding-top: 3em;
-}
-
-.timesheetHeader {
-  text-align: center;
-}
-
-.dark-overlay {
-  background-color: rgba(0, 0, 0, 0.35);
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-}
-
-.loader {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  z-index: 1000;
-}
-
-.spinner-modal {
-  background: none !important;
-  border: none !important;
-  align-items: center;
-}
-
 .react-date-picker__wrapper, .react-time-picker__wrapper  {
   border: none !important;
 }

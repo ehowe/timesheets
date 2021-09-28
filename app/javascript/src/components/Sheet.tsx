@@ -21,6 +21,7 @@ import {
 import client from './client'
 import { DispatchLoadingContext } from './LoadingProvider'
 import { SetExpiredLoginContext } from './ExpiredLoginProvider'
+import CenterHeader from './CenterHeader'
 import Modal from './Modal'
 
 type StateT = {
@@ -155,7 +156,7 @@ const Sheet: React.FC = () => {
                   <th>Length</th>
                 </React.Fragment>
               ) : (
-                <th colSpan={4} className="timesheetHeader">No Entries in this Timesheet</th>
+                <CenterHeader colSpan={4}>No Entries in this Timesheet</CenterHeader>
               )
             }
           </tr>

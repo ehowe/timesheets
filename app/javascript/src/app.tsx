@@ -1,10 +1,11 @@
 import * as React from 'react' // we need this to make JSX compile
 import * as Router from 'react-router-dom'
+import styled from 'styled-components'
 
 import {
-  Container,
+  Container as BootstrapContainer,
   Col,
-  Navbar,
+  Navbar as BootstrapNavbar,
   Nav,
   Row,
 } from 'react-bootstrap'
@@ -37,7 +38,7 @@ const App: React.FC = () => {
         id: "first_name",
         name: 'first_name',
         label: 'First Name',
-        type: 'text',
+        type: 'text'
       },
       {
         id: "last_name",
@@ -130,5 +131,14 @@ const App: React.FC = () => {
     </LoadingProvider>
   )
 }
+
+const Navbar = styled(BootstrapNavbar)`
+  padding-left: 1em;
+  padding-right: 1em;
+`
+
+const Container = styled(BootstrapContainer)`
+  padding-top: 3em;
+`
 
 export default App

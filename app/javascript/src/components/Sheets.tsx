@@ -6,6 +6,7 @@ import { PayPeriodT, ScheduleT } from '../model.types'
 
 import { DispatchLoadingContext } from './LoadingProvider'
 import { SetExpiredLoginContext } from './ExpiredLoginProvider'
+import CenterHeader from './CenterHeader'
 import Modal from './Modal'
 import client from './client'
 
@@ -106,7 +107,7 @@ const Sheets: React.FC = () => {
       <Table borderless hover responsive striped className="timesheets">
         <thead>
           <tr>
-            <th className="timesheetHeader">{headerText}</th>
+            <CenterHeader>{headerText}</CenterHeader>
           </tr>
         </thead>
         <tbody>
