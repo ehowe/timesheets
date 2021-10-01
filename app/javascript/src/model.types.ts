@@ -1,4 +1,4 @@
-export type UserT = {
+export interface UserT {
   admin: boolean,
   email: string,
   first_name: string,
@@ -9,7 +9,7 @@ export type UserT = {
   valid: boolean,
 }
 
-export type ScheduleT = {
+export interface ScheduleT {
   id: number,
   length_in_days: number,
   start_date: string,
@@ -18,7 +18,7 @@ export type ScheduleT = {
   timezone: string,
 }
 
-export type PayPeriodT = {
+export interface PayPeriodT {
   end: string,
   end_at: string,
   id: number,
@@ -27,15 +27,20 @@ export type PayPeriodT = {
   start_at: string,
 }
 
-export type EntryT = {
+export interface EntryT {
   category: string,
   end_at: string,
   id: number,
-  start_at: string,
   length: string,
+  length_in_hours: number,
+  start_at: string,
 }
 
-export type PayrollCategoryT = {
+export interface PayrollCategoryT {
   id: number,
+  name: string,
+}
+
+export interface AdminTimesheetT extends EntryT {
   name: string,
 }

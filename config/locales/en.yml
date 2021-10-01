@@ -34,3 +34,4 @@ en:
     formats:
       short: "%A %H:%M"
       long: "%A %B %-d %Y %H:%M"
+      dateAndTime: "%m-%e-%y %H:%M"

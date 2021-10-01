@@ -1,4 +1,5 @@
 import * as React from 'react'
+import { useHistory } from 'react-router-dom'
 
 import {
   Row,
@@ -12,6 +13,7 @@ import { SetExpiredLoginContext } from './ExpiredLoginProvider'
 import Pagination from './Pagination'
 
 const AdminTimesheets: React.FC = () => {
+  const history = useHistory()
   const setLoading = React.useContext(DispatchLoadingContext)
   const handleErrorResponse = React.useContext<any>(SetExpiredLoginContext).handleErrorResponse
 
@@ -25,6 +27,10 @@ const AdminTimesheets: React.FC = () => {
       .catch(error => handleErrorResponse(error))
       .finally(() => setLoading(false))
   }, [])
+
+  const handleRowClick = (id: number) => {
+    history.push(`/admin/timesheets/${id}`)
+  }
 
   return (
     <Row className="m-3" id="adminTimesheetsRow">
@@ -45,7 +51,7 @@ const AdminTimesheets: React.FC = () => {
                 items={payPeriods}
                 navElement="#adminTimesheetsRow"
                 render={(payPeriod: PayPeriodT) => (
-                  <tr key={payPeriod.id}>
+                  <tr key={payPeriod.id} onClick={() => handleRowClick(payPeriod.id)}>
                     <td>{payPeriod.start_at}</td>
                     <td>{payPeriod.end_at}</td>
                     <td>{payPeriod.length_in_days}</td>

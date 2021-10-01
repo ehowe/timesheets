@@ -49,4 +49,8 @@ class User < Sequel::Model
 
     uri.to_s
   end
+
+  def full_name
+    "#{first_name} #{last_name}"
+  end
 end

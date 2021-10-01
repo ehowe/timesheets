@@ -6,4 +6,6 @@ class PayPeriod < Sequel::Model
   end
 
   many_to_one :payroll_schedule
+
+  one_to_many :timesheets
 end

@@ -11,6 +11,7 @@ import {
 } from 'react-bootstrap'
 
 import Admin from './components/Admin'
+import AdminTimesheet from './components/AdminTimesheet'
 import Sheet from './components/Sheet'
 import Sheets from './components/Sheets'
 import LoadingModal from './components/LoadingModal'
@@ -105,6 +106,7 @@ const App: React.FC = () => {
                         { user.admin && (
                           <React.Fragment>
                             <Router.Route exact path="/admin/timesheets" component={Admin} />
+                            <Router.Route exact path="/admin/timesheets/:id" component={AdminTimesheet} />
                             <Router.Route exact path="/admin/payroll_schedules" component={Admin} />
                             <Router.Route exact path="/admin/payroll_categories" component={Admin} />
                             <Router.Route exact path="/admin/users" component={Admin} />

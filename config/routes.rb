@@ -17,7 +17,7 @@ Rails.application.routes.draw do
     end
 
     namespace :admin do
-      resources :pay_periods, only: [:index]
+      resources :pay_periods, only: [:index, :show]
       resources :payroll_categories
       resources :payroll_schedules
 
