@@ -5,7 +5,6 @@ import { useParams } from 'react-router-dom'
 import {
   Badge,
   Row,
-  Table,
 } from 'react-bootstrap'
 
 import { AdminTimesheetT } from '../model.types'
@@ -13,6 +12,7 @@ import { AdminTimesheetT } from '../model.types'
 import client from './client'
 import { DispatchLoadingContext } from './LoadingProvider'
 import { SetExpiredLoginContext } from './ExpiredLoginProvider'
+import Table from './Table'
 
 interface StateT {
   end_at: string
@@ -47,6 +47,14 @@ const AdminTimesheet: React.FC = () => {
       .finally(() => setLoading(false))
   }, [])
 
+  const tableFields = [
+    { name: 'Name', attr: 'name', sortable: true },
+    { name: 'Start', attr: 'start_at', sortable: true },
+    { name: 'End', attr: 'end_at', sortable: true },
+    { name: 'Length in Hours', attr: 'length_in_hours' },
+    { name: 'Payroll Category', attr: 'category', sortable: true },
+  ]
+
   return (
     <Row className="m-3">
       <Dates>
@@ -57,28 +65,11 @@ const AdminTimesheet: React.FC = () => {
           <strong>Pay Period End:&nbsp;</strong><Badge bg="secondary">{state.end_at}</Badge>
         </End>
       </Dates>
-      <Table>
-        <thead>
-          <tr>
-            <th>Name</th>
-            <th>Start</th>
-            <th>End</th>
-            <th>Length in Hours</th>
-            <th>Payroll Category</th>
-          </tr>
-        </thead>
-        <tbody>
-          { state.entries.map((entry: AdminTimesheetT) => (
-            <tr key={entry.id}>
-              <td>{entry.name}</td>
-              <td>{entry.start_at}</td>
-              <td>{entry.end_at}</td>
-              <td>{entry.length_in_hours}</td>
-              <td>{entry.category}</td>
-            </tr>
-          ))}
-        </tbody>
-      </Table>
+      <Table
+        defaultSort="start_at"
+        fields={tableFields}
+        items={state.entries}
+      />
     </Row>
   )
 }

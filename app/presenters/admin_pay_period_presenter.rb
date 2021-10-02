@@ -19,7 +19,9 @@ class AdminPayPeriodPresenter < BasePresenter
     object.timesheets.flat_map do |timesheet|
       timesheet.entries.map do |entry|
         TimesheetEntryPresenter.display(entry).merge(
-          name: timesheet.user.full_name,
+          end_at:   I18n.localize(entry.end_at, format: :dateAndTime),
+          name:     timesheet.user.full_name,
+          start_at: I18n.localize(entry.start_at, format: :dateAndTime),
         )
       end
     end

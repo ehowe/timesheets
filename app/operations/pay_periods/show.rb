@@ -6,6 +6,7 @@ module PayPeriods
       return Result.new(:error, "User is not an admin") unless admin_user.admin
 
       pay_period = PayPeriod
+        .order(:start_at)
         .eager(timesheets: [:user, { entries: :payroll_category }])[id.to_i]
 
       Result.new(:ok, AdminPayPeriodPresenter.display(pay_period))

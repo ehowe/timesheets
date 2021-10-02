@@ -18,27 +18,33 @@ const Pagination: React.FC<PropsT> = (props: PropsT) => {
     render,
   } = props
 
-  const [activePageItems, setActivePageItems] = React.useState([])
-  const [currentPage, setCurrentPage] = React.useState(1)
-  const [totalPages, setTotalPages] = React.useState(0)
+  const reducer = (state: any, update: any) => ({ ...state, ...update })
+
+  const INIT_STATE = {
+    activePageItems: [],
+    currentPage: 1,
+    totalPages: 0,
+  }
+
+  const [state, dispatch] = React.useReducer(reducer, INIT_STATE)
 
   React.useEffect(() => {
-    setTotalPages(Math.floor(items.length / perPage))
+    dispatch({ totalPages: Math.floor(items.length / perPage) })
   }, [items, perPage])
 
   React.useEffect(() => {
-    const startIndex = (currentPage * perPage) - 1
+    const startIndex = (state.currentPage - 1) * perPage
     const endIndex = startIndex + perPage
 
-    setActivePageItems(slice(items, startIndex, endIndex))
-  }, [items, currentPage, perPage])
+    dispatch({ activePageItems: slice(items, startIndex, endIndex) })
+  }, [items, state.currentPage, perPage])
 
   const handlePageChange = (e: any) => {
-    setCurrentPage(parseInt(e.target.text))
+    dispatch({ currentPage: parseInt(e.target.text) })
   }
 
-  const paginationLinks = times(totalPages, (page: number) => (
-    <li key={page} className={classnames('page-item', { active: page + 1 === currentPage })} onClick={handlePageChange}>
+  const paginationLinks = times(state.totalPages, (page: number) => (
+    <li key={page} className={classnames('page-item', { active: page + 1 === state.currentPage })} onClick={handlePageChange}>
       <a className="page-link">{page + 1}</a>
     </li>
   ))
@@ -58,7 +64,7 @@ const Pagination: React.FC<PropsT> = (props: PropsT) => {
 
   return (
     <React.Fragment>
-      { activePageItems.map((item: any) => render(item)) }
+      { state.activePageItems.map((item: any) => render(item)) }
       <NavLinks />
     </React.Fragment>
   )
