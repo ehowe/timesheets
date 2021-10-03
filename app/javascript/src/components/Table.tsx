@@ -1,4 +1,6 @@
 import * as React from 'react'
+import * as FileSaver from 'file-saver'
+import * as XLSX from 'xlsx'
 import classnames from 'classnames'
 import styled from 'styled-components'
 import { sortBy } from 'lodash'
@@ -6,6 +8,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faSort } from '@fortawesome/free-solid-svg-icons'
 
 import {
+  Button,
   Table as BootstrapTable,
 } from 'react-bootstrap'
 
@@ -15,8 +18,15 @@ type FieldT = {
   sortable?: boolean,
 }
 
+type ExportT = {
+  allowed?: boolean,
+  fileName?: string,
+  text?: string,
+}
+
 interface PropsT {
   defaultSort?: string
+  exportInfo?: ExportT
   fields: Array<FieldT>
   items: Array<any>
 }
@@ -42,6 +52,7 @@ display: flex;
 const Table: React.FC<PropsT> = (props) => {
   const {
     defaultSort,
+    exportInfo = {},
     fields,
     items,
   } = props
@@ -72,29 +83,55 @@ const Table: React.FC<PropsT> = (props) => {
     )
   }
 
+  const csvData = (): Array<Array<string>> => {
+    const array = []
+
+    array.push(fields.map(header => header.name))
+    state.sortedItems.forEach(entry => {
+      array.push(fields.map(field => entry[field.attr]))
+    })
+
+    return array
+  }
+
+  const exportToExcel = () => {
+    if (!exportInfo.allowed) return
+
+    const fileType = 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=UTF-8'
+    const fullFileName = `${exportInfo.fileName}.xlsx`
+    const ws = XLSX.utils.json_to_sheet(csvData(), { skipHeader: true })
+    const wb = { Sheets: { 'data': ws }, SheetNames: ['data'] }
+    const excelBuffer = XLSX.write(wb, { bookType: 'xlsx', type: 'array' })
+    const data = new Blob([excelBuffer], {type: fileType})
+    FileSaver.saveAs(data, fullFileName)
+  }
+
   return (
-    <BootstrapTable bordered>
-      <thead>
-        <tr>
-          { fields.map((field, index: number) => (
-            <th key={index}>
-              <HeaderDiv>
-                {field.name}{ field.sortable && <SortIcon field={field} />}
-              </HeaderDiv>
-            </th>
-          ))}
-        </tr>
-      </thead>
-      <tbody>
-        { state.sortedItems.map(item => (
-          <tr key={item.id}>
+    <React.Fragment>
+      { exportInfo.allowed && <Button variant="link" onClick={exportToExcel}>{exportInfo.text}</Button> }
+      <BootstrapTable bordered>
+        <thead>
+          <tr>
             { fields.map((field, index: number) => (
-              <td key={index}>{item[field.attr]}</td>
+              <th key={index}>
+                <HeaderDiv>
+                  {field.name}{ field.sortable && <SortIcon field={field} />}
+                </HeaderDiv>
+              </th>
             ))}
           </tr>
-        ))}
-      </tbody>
-    </BootstrapTable>
+        </thead>
+        <tbody>
+          { state.sortedItems.map(item => (
+            <tr key={item.id}>
+              { fields.map((field, index: number) => (
+                <td key={index}>{item[field.attr]}</td>
+              ))}
+            </tr>
+          ))}
+        </tbody>
+      </BootstrapTable>
+    </React.Fragment>
   )
 }
 

@@ -39,10 +39,7 @@ const AdminTimesheet: React.FC = () => {
     setLoading(true)
 
     client.request({ path: `/api/admin/pay_periods/${id}`, method: 'get' })
-      .then(response => {
-        console.log(response.data)
-        dispatch(response.data.pay_period)
-      })
+      .then(response => dispatch(response.data.pay_period))
       .catch(error => handleErrorResponse(error))
       .finally(() => setLoading(false))
   }, [])
@@ -57,16 +54,17 @@ const AdminTimesheet: React.FC = () => {
 
   return (
     <Row className="m-3">
-      <Dates>
+      <Header>
         <Start>
           <strong>Pay Period Start:&nbsp;</strong><Badge bg="secondary">{state.start_at}</Badge>
         </Start>
         <End>
           <strong>Pay Period End:&nbsp;</strong><Badge bg="secondary">{state.end_at}</Badge>
         </End>
-      </Dates>
+      </Header>
       <Table
         defaultSort="start_at"
+        exportInfo={{ allowed: true, fileName: state.start_at, text: 'Export to Excel' }}
         fields={tableFields}
         items={state.entries}
       />
@@ -74,8 +72,9 @@ const AdminTimesheet: React.FC = () => {
   )
 }
 
-const Dates = styled.div`
+const Header = styled.div`
 display: flex;
+min-width: 30%;
 padding-left: 0;
 `
 
@@ -83,6 +82,7 @@ const Start = styled.div`
 align-items: center;
 display: flex;
 justify-content: left;
+min-width: 40%;
 `
 
 const End = styled.div`
