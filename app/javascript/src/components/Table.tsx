@@ -5,7 +5,7 @@ import classnames from 'classnames'
 import styled from 'styled-components'
 import { sortBy } from 'lodash'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faSort } from '@fortawesome/free-solid-svg-icons'
+import { faFileExport, faSort } from '@fortawesome/free-solid-svg-icons'
 
 import {
   Button,
@@ -47,6 +47,12 @@ svg.selected {
 
 const HeaderDiv = styled.div`
 display: flex;
+`
+
+const ExportButton = styled(Button)`
+svg {
+  margin-left: 1em;
+}
 `
 
 const Table: React.FC<PropsT> = (props) => {
@@ -108,7 +114,12 @@ const Table: React.FC<PropsT> = (props) => {
 
   return (
     <React.Fragment>
-      { exportInfo.allowed && <Button variant="link" onClick={exportToExcel}>{exportInfo.text}</Button> }
+      { exportInfo.allowed && (
+        <ExportButton variant="link" onClick={exportToExcel}>
+          {exportInfo.text}
+          <FontAwesomeIcon icon={faFileExport}/>
+        </ExportButton>
+      )}
       <BootstrapTable bordered>
         <thead>
           <tr>
